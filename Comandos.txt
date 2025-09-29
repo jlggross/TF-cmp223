@@ -1,3 +1,30 @@
 # Topologia de hardware
 sudo apt install hwloc
 lstopo --no-io
+
+# Git
+
+-> Preparando repositório Git do zero
+git init
+git remote add origin https://github.com/jlggross/TF-cmp223.git
+
+-> Configuração usuário
+git config --global user.name "Seu Nome"
+git config --global user.email "seuemail@exemplo.com"
+
+-> Adicionar ao repositório
+git add .
+git commit -m ""
+
+-> Envio de commits
+git branch -M main
+git push -u origin main
+git push
+
+-> Download de commits
+git pull origin main
+
+-> Outros
+git --version
+sudo apt update
+sudo apt install git
