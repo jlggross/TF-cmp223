@@ -14029,8 +14029,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h1 id="Trabalho-Final---Parte-2---Parcial">Trabalho Final - Parte 2 - Parcial<a class="anchor-link" href="#Trabalho-Final---Parte-2---Parcial">&#182;</a></h1>
 </div>
 </div>
@@ -14040,8 +14039,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="Processos-em-Python">Processos em Python<a class="anchor-link" href="#Processos-em-Python">&#182;</a></h2><h3 id="GIL-do-Python">GIL do Python<a class="anchor-link" href="#GIL-do-Python">&#182;</a></h3><p>O GIL (Global Interpreter Lock) é um bloqueio global que garante que apenas uma thread de Python bytecode esteja executando por vez dentro de um processo.</p>
 <p>Isso significa que, mesmo criando várias threads, apenas uma thread consegue rodar instruções Python de cada vez.</p>
 <p>Ou seja, por padrão threads em Python não aceleram tarefas CPU-bound.</p>
@@ -14087,8 +14085,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="Afinidade-de-CPU-(CPU-affinity)">Afinidade de CPU (CPU affinity)<a class="anchor-link" href="#Afinidade-de-CPU-(CPU-affinity)">&#182;</a></h2><p>Por padrão o kernel do Linux é livre para mover um processo entre quaisquer núcleos de CPU disponíveis no sistema. No Ubuntu (Linux), entretanto, é possível controlar em qual CPU cada processo da aplicação Python irá executar com o uso da <strong>afinidade de CPU</strong>.</p>
 <p>Cada processo no Linux pode ter uma <strong>máscara de afinidade</strong> indicando quais núcleos ele está autorizado a executar.</p>
 <p>Em Python, no Linux, a afinidade pode ser definidade utilizando <code>os.sched_setaffinity</code>. A chamada de sistema é utilizada diretamente no código:</p>
@@ -14117,51 +14114,14 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Utilizando os.sched_setaffinity (Linux-only)</span>
-<span class="c1"># Execução de processos em núcleos definidos</span>
-
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">multiprocessing</span>
-
-<span class="k">def</span> <span class="nf">tarefa</span><span class="p">(</span><span class="n">cpu_id</span><span class="p">):</span>
-    <span class="c1"># Define afinidade para o processo atual</span>
-    <span class="n">pid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">sched_setaffinity</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="p">{</span><span class="n">cpu_id</span><span class="p">})</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Processo </span><span class="si">{</span><span class="n">pid</span><span class="si">}</span><span class="s2"> rodando no CPU </span><span class="si">{</span><span class="n">cpu_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">pass</span>  <span class="c1"># loop infinito para ocupar CPU</span>
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
-    <span class="n">processos</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">cpu</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>  <span class="c1"># usar apenas CPU 0 e CPU 1</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">tarefa</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">cpu</span><span class="p">,))</span>
-        <span class="n">processos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-        <span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-
-    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">processos</span><span class="p">:</span>
-        <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs jp-mod-noInput ">
 
 </div>
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="Cargas-de-trabalho-CPU-bound">Cargas de trabalho CPU-bound<a class="anchor-link" href="#Cargas-de-trabalho-CPU-bound">&#182;</a></h2><ul>
 <li>Criptografia</li>
 <li>Multiplicação de Matrizes</li>
@@ -14175,8 +14135,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h1 id="Criptografia">Criptografia<a class="anchor-link" href="#Criptografia">&#182;</a></h1><ul>
 <li>AES-CTR</li>
 </ul>
@@ -14184,299 +14143,31 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="ch">#!pip install pycryptodome</span>
-</pre></div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs jp-mod-noInput ">
 
-     </div>
-</div>
-</div>
-</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs jp-mod-noInput ">
 
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">)</span>
-</pre></div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs jp-mod-noInput ">
 
-     </div>
-</div>
-</div>
-</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs jp-mod-noInput ">
 
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">Cryptodome</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">Cryptodome</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
-</pre></div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs jp-mod-noInput ">
 
-     </div>
-</div>
-</div>
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Parallel AES-CTR Benchmark Script (PyCryptodome)</span>
-
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">Cryptodome.Cipher</span> <span class="kn">import</span> <span class="n">AES</span>
-<span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">ThreadPoolExecutor</span>
-
-<span class="c1"># Parameters</span>
-<span class="n">KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>   <span class="c1"># AES-256 key</span>
-<span class="n">NONCE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>  <span class="c1"># 64-bit nonce</span>
-<span class="n">THREADS</span> <span class="o">=</span> <span class="mi">8</span>
-<span class="n">BLOCK_SIZE</span> <span class="o">=</span> <span class="mi">16</span>  <span class="c1"># AES block size in bytes</span>
-
-<span class="k">def</span> <span class="nf">encrypt_chunk</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">counter_start</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Encrypt one chunk with AES-CTR using a thread-specific counter offset."""</span>
-    <span class="n">cipher</span> <span class="o">=</span> <span class="n">AES</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span> <span class="n">AES</span><span class="o">.</span><span class="n">MODE_CTR</span><span class="p">,</span> <span class="n">nonce</span><span class="o">=</span><span class="n">NONCE</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">counter_start</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">cipher</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">parallel_encrypt</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">THREADS</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Encrypt data in parallel with exactly num_threads threads."""</span>
-    <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">//</span> <span class="n">num_threads</span>
-    <span class="n">chunks</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">chunk_size</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">chunk_size</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_threads</span><span class="p">)]</span>
-    
-    <span class="c1"># Assign counters so keystreams don't overlap</span>
-    <span class="n">counters</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk_size</span> <span class="o">//</span> <span class="n">BLOCK_SIZE</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_threads</span><span class="p">)]</span>
-    
-    <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">num_threads</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
-        <span class="n">encrypted_chunks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">encrypt_chunk</span><span class="p">,</span> <span class="n">chunks</span><span class="p">,</span> <span class="n">counters</span><span class="p">))</span>
-    
-    <span class="k">return</span> <span class="sa">b</span><span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">encrypted_chunks</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">run_benchmark</span><span class="p">(</span><span class="n">data_size_bytes</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Run encryption benchmark for a given data size (bytes)."""</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">=== Benchmark: </span><span class="si">{</span><span class="n">data_size_bytes</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">)</span><span class="si">}</span><span class="s2"> MB ==="</span><span class="p">)</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="n">data_size_bytes</span><span class="p">)</span>  <span class="c1"># Allocate test data</span>
-    
-    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
-    <span class="n">ciphertext</span> <span class="o">=</span> <span class="n">parallel_encrypt</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-    <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
-    
-    <span class="n">elapsed</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
-    <span class="n">throughput_mb_s</span> <span class="o">=</span> <span class="p">(</span><span class="n">data_size_bytes</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">))</span> <span class="o">/</span> <span class="n">elapsed</span>
-    
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Time: </span><span class="si">{</span><span class="n">elapsed</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s"</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Throughput: </span><span class="si">{</span><span class="n">throughput_mb_s</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB/s using </span><span class="si">{</span><span class="n">THREADS</span><span class="si">}</span><span class="s2"> threads"</span><span class="p">)</span>
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
-    <span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="mi">512</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>   <span class="c1"># 512 MB</span>
-        <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>  <span class="c1"># 1 GB</span>
-        <span class="mi">2</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>  <span class="c1"># 2 GB</span>
-    <span class="p">]</span>
-    <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">:</span>
-        <span class="n">run_benchmark</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Correctness Check</span>
-
-<span class="kn">from</span> <span class="nn">Cryptodome.Cipher</span> <span class="kn">import</span> <span class="n">AES</span>
-
-<span class="k">def</span> <span class="nf">decrypt_chunk</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">counter_start</span><span class="p">):</span>
-    <span class="n">cipher</span> <span class="o">=</span> <span class="n">AES</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span> <span class="n">AES</span><span class="o">.</span><span class="n">MODE_CTR</span><span class="p">,</span> <span class="n">nonce</span><span class="o">=</span><span class="n">NONCE</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">counter_start</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">cipher</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">parallel_decrypt</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">THREADS</span><span class="p">):</span>
-    <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">)</span> <span class="o">//</span> <span class="n">num_threads</span>
-    <span class="n">chunks</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_threads</span><span class="p">):</span>
-        <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">chunk_size</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">num_threads</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">)</span>
-        <span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">])</span>
-        <span class="n">start</span> <span class="o">=</span> <span class="n">end</span>
-
-    <span class="n">blocks_per_chunk</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">)</span> <span class="o">+</span> <span class="n">num_threads</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">num_threads</span> <span class="o">//</span> <span class="n">BLOCK_SIZE</span>
-    <span class="n">counters</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">blocks_per_chunk</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_threads</span><span class="p">)]</span>
-
-    <span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">ThreadPoolExecutor</span>
-    <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">num_threads</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
-        <span class="n">decrypted_chunks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">decrypt_chunk</span><span class="p">,</span> <span class="n">chunks</span><span class="p">,</span> <span class="n">counters</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="sa">b</span><span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">decrypted_chunks</span><span class="p">)</span>
-
-<span class="n">data_size_bytes</span> <span class="o">=</span> <span class="mi">512</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="c1"># 512 MB</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="n">data_size_bytes</span><span class="p">)</span>
-<span class="n">ciphertext</span> <span class="o">=</span> <span class="n">parallel_encrypt</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="n">recovered</span> <span class="o">=</span> <span class="n">parallel_decrypt</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">recovered</span> <span class="o">==</span> <span class="n">data</span><span class="p">,</span> <span class="s2">"Decryption failed! Data does not match."</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"Encryption verified successfully!"</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Install only core parts of dask</span>
-<span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"dask[complete]"</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs jp-mod-noInput ">
 
 </div>
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h1 id="Multiplica%C3%A7%C3%A3o-de-Matrizes">Multiplica&#231;&#227;o de Matrizes<a class="anchor-link" href="#Multiplica%C3%A7%C3%A3o-de-Matrizes">&#182;</a></h1>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="sd">"""</span>
-<span class="sd">Safe Dask Matrix Multiplication Script</span>
-<span class="sd">--------------------------------------</span>
-<span class="sd">- MATRIX_SIZE is configurable (default 8000)</span>
-<span class="sd">- NUM_WORKERS sets exactly 8 parallel Dask worker processes</span>
-<span class="sd">- THREADS_PER_WORKER = 1 for BLAS / NumPy</span>
-<span class="sd">- Before computing, checks that MATRIX_SIZE is divisible by NUM_WORKERS</span>
-<span class="sd">"""</span>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs jp-mod-noInput ">
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">dask.array</span> <span class="k">as</span> <span class="nn">da</span>
-<span class="kn">from</span> <span class="nn">dask.distributed</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-
-<span class="c1"># -----------------------------</span>
-<span class="c1"># CONFIGURATION</span>
-<span class="n">MATRIX_SIZE</span> <span class="o">=</span> <span class="mi">16000</span>       <span class="c1"># Size of NxN matrices</span>
-<span class="n">NUM_WORKERS</span> <span class="o">=</span> <span class="mi">8</span>          <span class="c1"># Number of Dask worker processes</span>
-<span class="n">THREADS_PER_WORKER</span> <span class="o">=</span> <span class="mi">1</span>   <span class="c1"># Threads per worker (BLAS / NumPy)</span>
-
-<span class="c1"># -----------------------------</span>
-<span class="c1"># Safety check: ensure MATRIX_SIZE is divisible by NUM_WORKERS</span>
-<span class="k">if</span> <span class="n">MATRIX_SIZE</span> <span class="o">%</span> <span class="n">NUM_WORKERS</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error: MATRIX_SIZE (</span><span class="si">{</span><span class="n">MATRIX_SIZE</span><span class="si">}</span><span class="s2">) is not divisible by NUM_WORKERS (</span><span class="si">{</span><span class="n">NUM_WORKERS</span><span class="si">}</span><span class="s2">)."</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"Please choose a MATRIX_SIZE divisible by NUM_WORKERS."</span><span class="p">)</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-
-<span class="c1"># -----------------------------</span>
-<span class="c1"># Set BLAS threading to 1 per worker to avoid oversubscription</span>
-<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"OMP_NUM_THREADS"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">THREADS_PER_WORKER</span><span class="p">)</span>
-<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"MKL_NUM_THREADS"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">THREADS_PER_WORKER</span><span class="p">)</span>
-<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"OPENBLAS_NUM_THREADS"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">THREADS_PER_WORKER</span><span class="p">)</span>
-
-<span class="c1"># -----------------------------</span>
-<span class="c1"># Start Dask client</span>
-<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">n_workers</span><span class="o">=</span><span class="n">NUM_WORKERS</span><span class="p">,</span> <span class="n">threads_per_worker</span><span class="o">=</span><span class="n">THREADS_PER_WORKER</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Dask client started with </span><span class="si">{</span><span class="n">NUM_WORKERS</span><span class="si">}</span><span class="s2"> workers"</span><span class="p">)</span>
-
-<span class="c1"># -----------------------------</span>
-<span class="c1"># Define chunk sizes</span>
-<span class="n">chunk_rows</span> <span class="o">=</span> <span class="n">MATRIX_SIZE</span> <span class="o">//</span> <span class="n">NUM_WORKERS</span>
-<span class="n">chunk_cols</span> <span class="o">=</span> <span class="n">MATRIX_SIZE</span> <span class="o">//</span> <span class="n">NUM_WORKERS</span>
-
-<span class="c1"># Create Dask arrays</span>
-<span class="n">A</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">MATRIX_SIZE</span><span class="p">,</span> <span class="n">MATRIX_SIZE</span><span class="p">),</span> <span class="n">chunks</span><span class="o">=</span><span class="p">(</span><span class="n">chunk_rows</span><span class="p">,</span> <span class="n">MATRIX_SIZE</span><span class="p">))</span>
-<span class="n">B</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">MATRIX_SIZE</span><span class="p">,</span> <span class="n">MATRIX_SIZE</span><span class="p">),</span> <span class="n">chunks</span><span class="o">=</span><span class="p">(</span><span class="n">MATRIX_SIZE</span><span class="p">,</span> <span class="n">chunk_cols</span><span class="p">))</span>
-
-<span class="c1"># Print chunk sizes for verification</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"A chunks: </span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">chunks</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"B chunks: </span><span class="si">{</span><span class="n">B</span><span class="o">.</span><span class="n">chunks</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-
-<span class="c1"># -----------------------------</span>
-<span class="c1"># Matrix multiplication</span>
-<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="n">C</span> <span class="o">=</span> <span class="n">A</span> <span class="o">@</span> <span class="n">B</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>  <span class="c1"># Trigger parallel execution</span>
-<span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">"Matrix multiplication completed"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Result shape: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Elapsed time: </span><span class="si">{</span><span class="n">end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds"</span><span class="p">)</span>
-
-<span class="c1"># -----------------------------</span>
-<span class="c1"># Clean up</span>
-<span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs jp-mod-noInput ">
 
 </div>
 </body>
