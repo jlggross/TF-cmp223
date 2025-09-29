@@ -1,0 +1,14 @@
+Intel trusted execution technology (txt) disabled
+
+Hyper threading disabled
+
+Turbo boost disabled
+
+Intel speed step disabled: Allows The system tô dynamically adjust processo voltage and Core frequency, decreasing average Power consumption and heat production
+
+Atom cores set to zero
+
+---------------------------------------------------
+
+Extra configuration:
+- Intel management engine (ME)
