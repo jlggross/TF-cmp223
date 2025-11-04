@@ -1,0 +1,2 @@
+Python Free-Threading (Sem trava GIL)
+- Interpretador do Python
