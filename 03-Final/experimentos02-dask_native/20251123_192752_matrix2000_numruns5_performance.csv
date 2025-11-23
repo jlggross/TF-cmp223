@@ -1,0 +1,6 @@
+Run,Scenario,Workers,Governor,Time_sec,Result_shape
+1,Dask_Native_8Workers,8,performance,0.9446523189544678,"(2000, 2000)"
+2,Dask_Native_8Workers,8,performance,0.7738819122314453,"(2000, 2000)"
+3,Dask_Native_8Workers,8,performance,0.7771005630493164,"(2000, 2000)"
+4,Dask_Native_8Workers,8,performance,0.7559671401977539,"(2000, 2000)"
+5,Dask_Native_8Workers,8,performance,0.8297643661499023,"(2000, 2000)"
