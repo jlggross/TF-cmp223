@@ -89,23 +89,38 @@ A plataforma de execução consiste em uma estação de trabalho Dell OptiPlex 7
 O mini desktop em questão foi escolhido, pois o autor tem acesso irrestrito ao equipamento (24/7) e é usuário único, permitindo que os experimentos pudessem ser executados a qualquer tempo, sem a necessidade de compartilhamento de recursos. Adicionalmente, o equipamento está fisicamente instalado em um Data Center, onde a temperatura é mantida estável entre 17°C e 21°C, mitigando oscilações térmicas que poderiam interferir nos resultados.
 
 %----------------------------------------------------------------------------------
-\section{Aplicação e Características dos Scripts}
+\section{Algoritmo de Multiplicação de Matrizes}
 A multiplicação de matrizes foi selecionada como a carga de trabalho base para a avaliação de desempenho entre \textit{p-cores} e \textit{e-cores}. Esta escolha fundamenta-se na natureza estritamente \textit{CPU-bound} do problema e em sua alta capacidade de paralelização, características que permitem mensurar o desempenho computacional do pocessador e distribuir um conjunto de tarefas entre os múltiplos núcleos.
 
-Foram desenvolvidos 3 scripts para computar a multiplicação de matrizes. O primeiro foi desenvolvido para Python 3.12.12 utilizando Multiprocesing, o segundo também para Python 3.12.12 utilziando Dask e, por fim, o terceiro foi desenvolvido para Python 3.14.0 com Threading, visto que esta última versão do python não possui mais o bloqueio de GIL.
+Foram desenvolvidas três implementações distintas de scripts para a computação da multiplicação de matrizes. As duas primeiras foram executadas sobre o interpretador \textit{Python 3.12.12}: uma utilizando a biblioteca \textit{multiprocessing} para paralelismo baseado em processos, e a outra empregando o \textit{framework Dask} para computação paralela. A terceira implementação foi desenvolvida para o \textit{Python 3.14.0} utilizando o módulo \textit{threading}, visando explorar a remoção do \textit{Global Interpreter Lock} (GIL), recurso nativo desta versão que permite paralelismo real entre \textit{threads}.
 
-A Foram desenvolvidas três implementações distintas de scripts para a computação da multiplicação de matrizes. As duas primeiras foram executadas sobre o interpretador \textit{Python 3.12.12}: uma utilizando a biblioteca \textit{multiprocessing} para paralelismo baseado em processos, e a outra empregando o \textit{framework Dask} para computação paralela. A terceira implementação foi desenvolvida para o \textit{Python 3.14.0} utilizando o módulo \textit{threading}, visando explorar a remoção do \textit{Global Interpreter Lock} (GIL), recurso nativo desta versão que permite paralelismo real entre \textit{threads}.
+Cada implementação recebe como parâmetro de entrada a dimensão \textit{N} e procede para a criação de duas matrizes \textit{N x N} inicializadas com dados pseudoaleatórios. O algoritmo então segmenta o problema, criando 8 tarefas distintas, onde cada uma é responsavel por computar uma fatia equivalente do cálculo total. Ao término da execução paralela, o sistema realiza a concatenação dos 8 blocos de resultados parciais para compor a matriz final da multiplicação.
+
+%----------------------------------------------------------------------------------
+\section{Características das Implementações}
+
+As estratégias de gerenciamento de memória diferem para cada implementação. No cenário com \textit{multiprocessing}, são instanciados 8 processos filhos através da \textit{system call} \path{fork()}. Este método beneficia-se do mecanismo de Copy-on-Write (CoW), onde o espaço de endereçamento do processo pai é compartilhado virtualmente com os filhos. Visto que as operações nas matrizes são estritamente de leitura, elimina-se a sobrecarga (\textit{overhead}) de duplicação ou transferência de dados, otimizando o consumo de recursos.
 
 
-8 threads/processos, sempre
+Para a implementação em Dask as matrizes a serem multiplicadas são particionadas em chunks e o comando nativo de Dask \path{da.matmul(dask_A, dask_B)} se encarrega de distribuir as tarefas entre workers nos núcleos de CPU, não permitindo setar afinidade por worker individualmente. Setar a afinidade de CPU só é possível no processo pai, antes que a computação do \path{da.matmul} inicie. 
 
-- 3 scripts: características de cada um
+Na implementação em Dask não foi possível setar os núcleos de CPU para processamento, visto que as tarefas criadas pelo CLuster Dask entram em um Pool e são alocadas ao hardware disponível. Devido à essa característica uma forma de contorno foi definir no processo pai via comando \path{parent.cpu_affinity(cores_list)} os núcleos de CPU que os filhos poderiam utilizar
+
+
+
+
+
+As implementações também contam, ao final de cada execução, com o registro do horário e da temperatura da CPU. Todas as execuções são realizadas com o governor do processador setado para o modo performance, objetivando o uso do clock dos núcleos de CPU na frequência máxima permitida.
+
 - coleta de temperatura ao término de cada execução
 - registro do tempo final de cada execução
-- cenários: p-core sem HT, p-core com HT, p-core+e-core, e-core only
 - governor: sempre performance
 %----------------------------------------------------------------------------------
 \section{Cenários dos Testes}
+
+Conforme mencionado na seção anterior, 8 tarefas são criadas e distribuídas para computação. Assim, os cenários são
+
+- cenários: p-core sem HT, p-core com HT, p-core+e-core, e-core only
 
 %----------------------------------------------------------------------------------
 \section{Estudos Preliminares e Validações}
