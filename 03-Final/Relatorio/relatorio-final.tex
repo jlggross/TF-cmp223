@@ -41,7 +41,7 @@
 \affiliation{
   \institution{Instituto de Informática da UFRGS}
   \city{Porto Alegre}
-  \state{Rio grande do Sul}
+  \state{Rio Grande do Sul}
   \country{Brasil}
 }
 
@@ -68,7 +68,7 @@
 %%
 %% Keywords. The author(s) should pick words that accurately describe
 %% the work being presented. Separate the keywords with commas.
-\keywords{P-Core, E-Core, Intel}
+\keywords{P-Core, E-Core, Hyper-Threading, Intel Turbo Boost, Afinidade de CPU, Python GIL, Multiprocessing, Dask, Threading}
 
 %\received{20 February 2007}
 %\received[revised]{12 March 2009}
@@ -86,10 +86,17 @@ E-cores energia/econômico
 aplicação de multiplicação de matrizes
 
 %----------------------------------------------------------------------------------
-\section{Plataforma: Hardware e SO}
-A plataforma de execução consiste em uma estação de trabalho Dell OptiPlex 7020 Micro. As especificações de \textit{hardware} incluem uma CPU Intel Core i7-14700T (14ª Geração, 20 cores, sendo 8 \textit{P-cores}/16 \textit{threads} e 12 \textit{E-cores}/12 \textit{threads}, cache de 33 MB, 1.3GHZ a 5.0GHz), 16GB de RAM DDR5 5600MT/s (módulo único) e SSD de 512GB NVMe M.2 \cite{DellOptiPlex}. O ambiente de \textit{software} baseia-se no sistema operacional Ubuntu 24.04 LTS \cite{Ubuntu}.
+\section{Plataforma: Hardware e Sistema Operacional (SO)}
+A infraestrutura computacional utilizada nos experimentos consiste em uma estação de trabalho Dell OptiPlex 7020 Micro. As especificações de \textit{hardware} incluem uma CPU Intel Core i7-14700T (14ª Geração, 20 cores, sendo 8 \textit{P-cores}/16 \textit{threads} e 12 \textit{E-cores}/12 \textit{threads}, cache de 33 MB, 1.3GHZ a 5.0GHz), 16GB de RAM DDR5 5600MT/s (módulo único) e SSD de 512GB NVMe M.2 \cite{DellOptiPlex}. O ambiente de \textit{software} baseia-se no sistema operacional Ubuntu 24.04 LTS \cite{Ubuntu}.
 
-O mini desktop em questão foi escolhido, pois o autor tem acesso irrestrito ao equipamento (24/7) e é usuário único, permitindo que os experimentos pudessem ser executados a qualquer tempo, sem a necessidade de compartilhamento de recursos. Adicionalmente, o equipamento está fisicamente instalado em um Data Center, onde a temperatura é mantida estável entre 17°C e 21°C, mitigando oscilações térmicas que poderiam interferir nos resultados.
+A seleção desta plataforma baseou-se na disponibilidade de acesso exclusivo e irrestrito (24/7), permitindo a execução dos experimentos em um ambiente isolado, livre da contenção de recursos típica de sistemas compartilhados. Fisicamente, o equipamento encontra-se alocado em um \textit{Data Center} onde a temperatura é mantida estável entre 17°C e 21°C, mitigando oscilações térmicas que poderiam interferir nos resultados. Para assegurar a operação remota completa, o sistema foi configurado com a tecnologia \textit{Intel vPro}, possibilitando o gerenciamento \textit{out-of-band} — incluindo reinicialização, acesso à BIOS e seleção SO via menu GRUB remotos — enquanto o acesso ao sistema operacional foi realizado via protocolo RDP.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/plataform.png}
+	\caption{Acesso e controle da plataforma de experimentos}
+	\label{fig:plataform}
+\end{figure}
 
 %----------------------------------------------------------------------------------
 \section{Algoritmo de Multiplicação de Matrizes}
@@ -102,7 +109,7 @@ O algoritmo recebe como parâmetro de entrada a dimensão \textit{N} e procede p
 \section{Características das Implementações}
 Foram desenvolvidas três implementações para o algoritmo de multiplicação de matrizes. Embora todas se fundamentem no alto nível de paralelismo inerente ao problema, cada uma adota uma estratégia de gerenciamento de memória distinta.
 
-A primeira implementação foi executada sobre o interpretador \textit{Python 3.12.12} com o módulo \textit{multiprocessing}. Nesta abordagem, instanciam-se 8 processos filhos através da \textit{system call} \path{fork()}. O método beneficia-se do mecanismo de \textit{Copy-on-Write} (CoW), onde o espaço de endereçamento do processo pai é compartilhado virtualmente com os filhos. Visto que as operações nas matrizes são estritamente de leitura, elimina-se a sobrecarga (\textit{overhead}) de duplicação ou transferência de dados, otimizando o consumo de recursos.
+A primeira implementação foi executada sobre o interpretador \textit{Python 3.12.12} com o módulo \textit{multiprocessing}. Nesta abordagem, instanciam-se 8 processos filhos independentes através da \textit{system call} \path{fork()}. O método beneficia-se do mecanismo de \textit{Copy-on-Write} (CoW), onde o espaço de endereçamento do processo pai é compartilhado virtualmente com os filhos. Visto que as operações nas matrizes são estritamente de leitura, elimina-se a sobrecarga (\textit{overhead}) de duplicação ou transferência de dados, otimizando o consumo de recursos.
 
 A abordagem com Dask, também para o \textit{Python 3.12.12}, baseia-se no particionamento das matrizes em blocos. Dadas as limitações de configuração explícita de afinidade por \textit{worker} no comando nativo \path{da.matmul}, a estratégia de controle de CPU é aplicada no nível do processo pai. Utiliza-se o conceito de \textbf{Herança de Afinidade}: define-se a afinidade da CPU no processo principal antes da execução do \textit{fork} que cria os \textit{workers}. Por consequência, quando os \textit{workers} são instanciados, o \textit{Kernel} garante que eles herdem as restrições do pai, assegurando que as tarefas distribuídas pelo Dask sejam processadas estritamente pelos núcleos designados.
 
@@ -130,32 +137,62 @@ Abaixo a descrição do cenários de testes:
 	\item[\texttt{8E}:] Utiliza 8 \textit{E-cores} (1 \textit{thread} por núcleo físico). Os IDs lógicos utilizados são \path{{16, 17, 18, 19, 20, 21, 22, 23}}.
 \end{description}
 
-Em todos os cenários avaliados, optou-se pela manutenção da tecnologia \textit{Intel Turbo Boost} habilitada, permitindo que a frequência de operação atinga os valores máximos permitidos. A desabilitação deste recurso confinaria os núcleos à sua frequência base \cite{IntelTurbo}, o que comprometeria os experimentos. Embora reconheça-se que a elevação da temperatura da CPU possa induzir a redução forçada da frequência (\textit{thermal throttling}), este risco foi mitigado com intervalos de descanso entre as execuções consecutivas.
+Em todos os cenários avaliados, optou-se pela manutenção da tecnologia \textit{Intel Turbo Boost} habilitada, permitindo que a frequência de operação atinga os valores máximos permitidos. A desabilitação deste recurso confinaria os núcleos à sua frequência base \cite{IntelTurbo}, o que comprometeria os experimentos. Embora reconheça-se que a elevação da temperatura da CPU possa levar à redução forçada da frequência (\textit{thermal throttling}), este risco foi mitigado com intervalos de resfriamento entre as execuções consecutivas.
 
 
 %----------------------------------------------------------------------------------
-\section{Configurações do Ambiente}
-[TODO]
-- pyenv e versões de python
-- variáveis de ambiente, BLAS, numpy uma thread
-- Comandos para execução do Jupyer notebook com variáveis de ambiente, seja python 3.12 ou Python 3.14
+\section{Ambiente e Configurações}
+
+A orquestração e execução dos códigos foram realizadas utilizando o ambiente interativo \textit{Jupyter Notebook}. Dado o requisito de avaliação comparativa entre versões distintas do interpretador, empregou-se a ferramenta \texttt{pyenv} para o gerenciamento de versões. Foram instaladas e configuradas as versões \textit{Python 3.12.12} (estável) e \textit{Python 3.14.0t} (experimental \textit{free-threading}). Previamente à inicialização do servidor \textit{Jupyter}, a versão alvo foi selecionada explicitamente com os comandos \path{pyenv local {py_version}} e \path{pyenv shell {py_version}}.
+
+Também foi necessário neutralizar o paralelismo implícito de baixo nível presente nas bibliotecas de álgebra linear (BLAS/LAPACK) utilizadas pelo \textit{NumPy}. Para garantir que a operação vetorial \texttt{np.dot()}) fosse executada de maneira serial (\textit{single-threaded}) dentro de cada processo da aplicação, as seguintes variáveis de ambiente foram configuradas com valor 1:
+
+\begin{flushleft}
+	OPENBLAS\_NUM\_THREADS=1 \hspace{0.05cm} OMP\_NUM\_THREADS=1 \hspace{0.05cm} MKL\_NUM\_THREADS=1  
+	VECLIB\_MAXIMUM\_THREADS=1 \hspace{0.05cm} NUMEXPR\_NUM\_THREADS=1 
+\end{flushleft}
+
+Além da seleção da versão adequada do interpretador e da parametrização para o Numpy, a utilização da versão \textit{Python 3.14.0t} requer a desativação explícita do \textit{GIL} via variável de ambiente. Assim, as instruções de linha de comando para a inicialização do servidor \textit{Jupyter}, referentes aos ambientes 3.12.12 e 3.14.0t, apresentam-se, respectivamente, da seguinte forma:
+
+\vspace{0.3cm}
+
+\noindent \textbf{Para \textit{Python 3.12.12}:}
+\begin{small}
+	\noindent OMP\_NUM\_THREADS=1 MKL\_NUM\_THREADS=1 VECLIB\_MAXIMUM\_THREADS=1 OPENBLAS\_NUM\_THREADS=1 NUMEXPR\_NUM\_THREADS=1 jupyter notebook
+\end{small}
+
+\vspace{0.3cm}
+
+\noindent \textbf{Para \textit{Python 3.14.0t}:}
+\begin{small}
+	\noindent OMP\_NUM\_THREADS=1 MKL\_NUM\_THREADS=1 VECLIB\_MAXIMUM\_THREADS=1 OPENBLAS\_NUM\_THREADS=1 NUMEXPR\_NUM\_THREADS=1 PYTHON\_GIL=0 jupyter notebook
+\end{small}
 
 
 %----------------------------------------------------------------------------------
 \section{Projeto Experimental}
-- 3 scripts
-- 4 cenários
-- 5 tamanhos de matriz: máximo de 8000 para evitar problema de memória no script Dask
-- 30 repetições: para aproximação de uma distribuição gaussiana real e para aumentar intervalo de confiança
+Para criar o projeto experimental, foram definidos 5 tamanhos de matriz de entrada: 1000, 2000, 4000, 6000 e 8000. Dimensões superiores a 8000 foram desconsideradas devido às restrições de memória da plataforma (evitando estou de memória). O experimento avaliou 4 cenários distintos de alocação de núcleos de CPU. Para cada combinação de cenário $\times$ tamanho de matriz, foram realizadas 30 execuções, visando aproximar a distribuição dos dados de uma normal (Teorema do Limite Central) e assegurar um intervalo de confiança robusto. 
 
-- adição de cargas de warmup (descartadas na análise)
+As 600 configurações resultantes (4 cenários $\times$ 5 tamanhos $\times$ 30 repetições) foram geradas via script e a sua  ordem foi aleatorizada. Esse embaralhamento é crucial para mitigar correlações temporais ou vieses entre as execuções. Adicionalmente, inseriu-se uma etapa de \textit{warm-up} no início da bateria de testes, composta por 6 execuções com matriz de tamanho 8000 e oito \textit{P-cores} de \textit{thread} única. O objetivo desta etapa é permitir que a CPU atinja um estado estável de temperatura, sendo os resultados destas execuções descartados posteriormente. 
 
-- embaralhamento dos 600 experimentos + 8 cargas de warmup iniciais matrix\_size 8000
+Por fim, para garantir a reprodutibilidade e a igualdade da comparação, as três implementações fixaram a mesma semente (np.random.seed(42)). Isso assegura que todas as implementações processem exatamente as mesmas matrizes de entrada.
+
+O resultado final é um arquivo .csv contendo 606 configurações: as 6 primeiras de \textit{warm-up} e as 600 restantes pertencentes ao experimento. 
 
 %----------------------------------------------------------------------------------
 \section{Análise dos Resultados}
 
-\subsubsection{Script 1}
+Esta seção destina-se à análise dos resultados obtidos ao executar o projeto experimental nas três implementações. 
+
+\subsubsection{Evolução da Temperatura}
+Gráfico com evolução da temperatura da CPU para mostrar que houve estabilidade da temperatura no tempo
+Mostrar 3 gráficos, isto é, um para cada implementação
+
+\subsubsection{Tempo de execução}
+
+Mostrar 5 gráficos, cada um com 3 bloxplots, um de cada script. Cada gráfico é de um tamanho de matrizes diferente.
+
+Mostrar 3 gráficos, um de cada script, gráfico scatter, com acúmulo de pontos para cada tamanho de matriz
 
 %----------------------------------------------------------------------------------
 \section{Reprodutibilidade}
@@ -185,77 +222,6 @@ This is a paragraph.
 \subparagraph{Subparagraph}
 
 This is a subparagraph.
-
-\section{Tables}
-
-The ``\verb|acmart|'' document class includes the ``\verb|booktabs|''
-package --- \url{https://ctan.org/pkg/booktabs} --- for preparing
-high-quality tables.
-
-Immediately following this sentence is the point at which
-Table~\ref{tab:freq} is included in the input file; compare the
-placement of the table here with the table in the printed output of
-this document.
-
-\begin{table}
-  \caption{Frequency of Special Characters}
-  \label{tab:freq}
-  \begin{tabular}{ccl}
-    \toprule
-    Non-English or Math&Frequency&Comments\\
-    \midrule
-    \O & 1 in 1,000& For Swedish names\\
-    $\pi$ & 1 in 5& Common in math\\
-    \$ & 4 in 5 & Used in business\\
-    $\Psi^2_1$ & 1 in 40,000& Unexplained usage\\
-  \bottomrule
-\end{tabular}
-\end{table}
-
-To set a wider table, which takes up the whole width of the page's
-live area, use the environment \textbf{table*} to enclose the table's
-contents and the table caption.  As with a single-column table, this
-wide table will ``float'' to a location deemed more
-desirable. Immediately following this sentence is the point at which
-Table~\ref{tab:commands} is included in the input file; again, it is
-instructive to compare the placement of the table here with the table
-in the printed output of this document.
-
-\begin{table*}
-  \caption{Some Typical Commands}
-  \label{tab:commands}
-  \begin{tabular}{ccl}
-    \toprule
-    Command &A Number & Comments\\
-    \midrule
-    \texttt{{\char'134}author} & 100& Author \\
-    \texttt{{\char'134}table}& 300 & For tables\\
-    \texttt{{\char'134}table*}& 400& For wider tables\\
-    \bottomrule
-  \end{tabular}
-\end{table*}
-
-Always use midrule to separate table header rows from data rows, and
-use it only for this purpose. This enables assistive technologies to
-recognise table headers and support their users in navigating tables
-more easily.
-
-
-\section{Figures}
-
-The ``\verb|figure|'' environment should be used for figures. One or
-more images can be placed within a figure. If your figure contains
-third-party material, you must clearly identify it as such, as shown
-in the example below.
-\begin{figure}[h]
-  \centering
-  \caption{1907 Franklin Model D roadster. Photograph by Harris \&
-    Ewing, Inc. [Public domain], via Wikimedia
-    Commons. (\url{https://goo.gl/VLCRBB}).}
-  \Description{A woman and a girl in white dresses sit in an open car.}
-\end{figure}
-
-  Some examples.  A paginated journal article \cite{Abril07}.
 
 %%
 %% The next two lines define the bibliography style to be used, and
