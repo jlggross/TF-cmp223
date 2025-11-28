@@ -1,2 +1,0 @@
-Experiment_ID,Matrix_Size,CPU_Set_Name,CPU_Cores_List,Run_Number,Executed_Governor,Time_sec,Temp°C,Timestamp
-EXP_WARMUP,8000,8P_HT_OFF,[0; 2; 4; 6; 8; 10; 12; 14],0,performance,2.5859272480010986,40.0,2025-11-26T13:17:19.295612

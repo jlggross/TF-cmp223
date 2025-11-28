@@ -89,7 +89,7 @@ aplicação de multiplicação de matrizes
 \section{Plataforma: Hardware e Sistema Operacional (SO)}
 A infraestrutura computacional utilizada nos experimentos consiste em uma estação de trabalho Dell OptiPlex 7020 Micro. As especificações de \textit{hardware} incluem uma CPU Intel Core i7-14700T (14ª Geração, 20 cores, sendo 8 \textit{P-cores}/16 \textit{threads} e 12 \textit{E-cores}/12 \textit{threads}, cache de 33 MB, 1.3GHZ a 5.0GHz), 16GB de RAM DDR5 5600MT/s (módulo único) e SSD de 512GB NVMe M.2 \cite{DellOptiPlex}. O ambiente de \textit{software} baseia-se no sistema operacional Ubuntu 24.04 LTS \cite{Ubuntu}.
 
-A seleção desta plataforma baseou-se na disponibilidade de acesso exclusivo e irrestrito (24/7), permitindo a execução dos experimentos em um ambiente isolado, livre da contenção de recursos típica de sistemas compartilhados. Fisicamente, o equipamento encontra-se alocado em um \textit{Data Center} onde a temperatura é mantida estável entre 17°C e 21°C, mitigando oscilações térmicas que poderiam interferir nos resultados. Para assegurar a operação remota completa, o sistema foi configurado com a tecnologia \textit{Intel vPro}, possibilitando o gerenciamento \textit{out-of-band} — incluindo reinicialização, acesso à BIOS e seleção SO via menu GRUB remotos — enquanto o acesso ao sistema operacional foi realizado via protocolo RDP.
+A seleção desta plataforma baseou-se na disponibilidade de acesso exclusivo e irrestrito (24/7), permitindo a execução dos experimentos em um ambiente isolado, livre da contenção de recursos típica de sistemas compartilhados. Fisicamente, o equipamento encontra-se alocado em um \textit{Data Center} onde a temperatura é mantida estável entre 17$^\circ\text{C}$ e 21$^\circ\text{C}$, mitigando oscilações térmicas que poderiam interferir nos resultados. Para assegurar a operação remota completa, o sistema foi configurado com a tecnologia \textit{Intel vPro}, possibilitando o gerenciamento \textit{out-of-band} — incluindo reinicialização, acesso à BIOS e seleção SO via menu GRUB remotos — enquanto o acesso ao sistema operacional foi realizado via protocolo RDP.
 
 \begin{figure}[h]
 	\centering
@@ -137,7 +137,7 @@ Abaixo a descrição do cenários de testes:
 	\item[\texttt{8E}:] Utiliza 8 \textit{E-cores} (1 \textit{thread} por núcleo físico). Os IDs lógicos utilizados são \path{{16, 17, 18, 19, 20, 21, 22, 23}}.
 \end{description}
 
-Em todos os cenários avaliados, optou-se pela manutenção da tecnologia \textit{Intel Turbo Boost} habilitada, permitindo que a frequência de operação atinga os valores máximos permitidos. A desabilitação deste recurso confinaria os núcleos à sua frequência base \cite{IntelTurbo}, o que comprometeria os experimentos. Embora reconheça-se que a elevação da temperatura da CPU possa levar à redução forçada da frequência (\textit{thermal throttling}), este risco foi mitigado com intervalos de resfriamento entre as execuções consecutivas.
+Em todos os cenários avaliados, optou-se pela manutenção da tecnologia \textit{Intel Turbo Boost} habilitada, permitindo que a frequência de operação atinga os valores máximos permitidos. A desabilitação deste recurso confinaria os núcleos à sua frequência base \cite{IntelTurbo}, o que comprometeria os experimentos. Embora reconheça-se que a elevação da temperatura da CPU possa levar à redução forçada da frequência (\textit{thermal throttling}), este risco foi mitigado com intervalos de resfriamento de dez segundos entre as execuções consecutivas.
 
 
 %----------------------------------------------------------------------------------
@@ -181,14 +181,24 @@ O resultado final é um arquivo .csv contendo 606 configurações: as 6 primeira
 
 %----------------------------------------------------------------------------------
 \section{Análise dos Resultados}
-
 Esta seção destina-se à análise dos resultados obtidos ao executar o projeto experimental nas três implementações. 
 
-\subsubsection{Evolução da Temperatura}
-Gráfico com evolução da temperatura da CPU para mostrar que houve estabilidade da temperatura no tempo
-Mostrar 3 gráficos, isto é, um para cada implementação
+\subsection{Evolução da Temperatura}
+Como ponto de partida para a avaliação de desempenho, examinou-se o comportamento térmico da CPU.
 
-\subsubsection{Tempo de execução}
+\begin{figure}[h]
+	\centering
+	%\includegraphics[width=0.8\textwidth]{images/analise_temperatura.pdf}
+	\includegraphics[width=1\textwidth]{images/analise_temperatura_compacta.pdf}
+	\caption{Evolução térmica por implementação (Multiprocessing, Dask, Threading)}
+	\label{fig:temp_evolution}
+\end{figure}
+
+A Figura~\ref{fig:temp_evolution} mostra que as temperaturas percebidas pelas abordagens de Multiprocessing e Dask apresentaram temperaturas médias de 74.1°C e 74.8°C, respectivamente. Já a implementação com Threading apresentou temperaturas médias de 45.1°C. Este é um primeiro indicativo de que, no geral, a implementação com Threading foi mais eficiente, pois conseguiu concluir os cálculos matemáticos sem esquentar tanto a CPU.
+
+Conforme ilustrado na Figura~\ref{fig:temp_evolution}, as estratégias de \textit{Multiprocessing} e \textit{Dask} resultaram em temperaturas médias de $74.1^\circ\text{C}$ e $74.8^\circ\text{C}$, evidenciando uso intensivo dos núcleos de processamento. Por outro lado, a implementação via \textit{Threading} apresentou uma média de $45.1^\circ\text{C}$. Essa disparidade térmica indica que o modelo de \textit{Threading} demandou menos recursos da CPU, possivelmente devido às limitações de concorrência inerentes ao GIL, resultando em menor dissipação de calor.
+
+\subsection{Tempo de execução}
 
 Mostrar 5 gráficos, cada um com 3 bloxplots, um de cada script. Cada gráfico é de um tamanho de matrizes diferente.
 
