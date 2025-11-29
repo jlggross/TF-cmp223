@@ -7,6 +7,29 @@
     Bib\TeX}}}
 
 \usepackage{xurl}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\renewcommand{\lstlistingname}{Código}
+\renewcommand{\lstlistlistingname}{Lista de Códigos}
+\renewcommand{\tablename}{Tabela}
+
+\lstset{
+	language=Python,
+	basicstyle=\ttfamily\small,
+	keywordstyle=\color{blue},
+	stringstyle=\color{brown},
+	commentstyle=\color{gray},
+	numbers=left,
+	numberstyle=\tiny\color{gray},
+	stepnumber=1,
+	numbersep=8pt,
+	frame=single,
+	breaklines=true,
+	tabsize=4,
+	showstringspaces=false,
+}
+
 
 \setcopyright{none}
 \copyrightyear{2025}
@@ -87,7 +110,7 @@ aplicação de multiplicação de matrizes
 
 %----------------------------------------------------------------------------------
 \section{Plataforma: Hardware e Sistema Operacional (SO)}
-A infraestrutura computacional utilizada nos experimentos consiste em uma estação de trabalho Dell OptiPlex 7020 Micro. As especificações de \textit{hardware} incluem uma CPU Intel Core i7-14700T (14ª Geração, 20 cores, sendo 8 \textit{P-cores}/16 \textit{threads} e 12 \textit{E-cores}/12 \textit{threads}, cache de 33 MB, 1.3GHZ a 5.0GHz), 16GB de RAM DDR5 5600MT/s (módulo único) e SSD de 512GB NVMe M.2 \cite{DellOptiPlex}. O ambiente de \textit{software} baseia-se no sistema operacional Ubuntu 24.04 LTS \cite{Ubuntu}.
+A infraestrutura computacional utilizada nos experimentos consiste em uma estação de trabalho Dell OptiPlex 7020 Micro. As especificações de \textit{hardware} incluem uma CPU Intel Core i7-14700T (14ª Geração, 20 cores, sendo 8 \textit{P-Cores}/16 \textit{threads} e 12 \textit{E-Cores}/12 \textit{threads}, cache de 33 MB, 1.3GHZ a 5.0GHz), 16GB de RAM DDR5 5600MT/s (módulo único) e SSD de 512GB NVMe M.2 \cite{DellOptiPlex}. O ambiente de \textit{software} baseia-se no sistema operacional Ubuntu 24.04 LTS \cite{Ubuntu}.
 
 A seleção desta plataforma baseou-se na disponibilidade de acesso exclusivo e irrestrito (24/7), permitindo a execução dos experimentos em um ambiente isolado, livre da contenção de recursos típica de sistemas compartilhados. Fisicamente, o equipamento encontra-se alocado em um \textit{Data Center} onde a temperatura é mantida estável entre 17$^\circ\text{C}$ e 21$^\circ\text{C}$, mitigando oscilações térmicas que poderiam interferir nos resultados. Para assegurar a operação remota completa, o sistema foi configurado com a tecnologia \textit{Intel vPro}, possibilitando o gerenciamento \textit{out-of-band} — incluindo reinicialização, acesso à BIOS e seleção SO via menu GRUB remotos — enquanto o acesso ao sistema operacional foi realizado via protocolo RDP.
 
@@ -101,7 +124,7 @@ A seleção desta plataforma baseou-se na disponibilidade de acesso exclusivo e 
 %----------------------------------------------------------------------------------
 \section{Algoritmo de Multiplicação de Matrizes}
 \label{secao_algoritmo}
-A multiplicação de matrizes foi selecionada como a carga de trabalho base para a avaliação de desempenho entre \textit{p-cores} e \textit{e-cores}. Esta escolha fundamenta-se na natureza estritamente \textit{CPU-bound} do problema e em sua alta capacidade de paralelização, características que permitem mensurar o desempenho computacional do processador e distribuir um conjunto de tarefas entre os múltiplos núcleos.
+A multiplicação de matrizes foi selecionada como a carga de trabalho base para a avaliação de desempenho entre \textit{P-Cores} e \textit{E-Cores}. Esta escolha fundamenta-se na natureza estritamente \textit{CPU-bound} do problema e em sua alta capacidade de paralelização, características que permitem mensurar o desempenho computacional do processador e distribuir um conjunto de tarefas entre os múltiplos núcleos.
 
 O algoritmo recebe como parâmetro de entrada a dimensão \textit{N} e procede para a criação de duas matrizes \textit{N x N} inicializadas com dados pseudoaleatórios. Ele então segmenta o problema, criando 8 tarefas distintas, onde cada uma é responsável por computar uma fatia equivalente do cálculo total. Ao término da execução paralela, o sistema realiza a concatenação dos 8 blocos de resultados parciais para compor a matriz final da multiplicação.
 
@@ -119,22 +142,22 @@ Todas as implementações registram, ao término de cada execução, o horário 
 
 %----------------------------------------------------------------------------------
 \section{Cenários dos Testes}
-A fim de medir a performance dos p-cores e e-cores ao execução a multiplicação de matrizes 4 cenários de testes foram projetados. Conforme mencionado na seção \ref{secao_algoritmo}, 8 tarefas são criadas e escalonadas para computação, logo cada um dos cenários é composto por um conjunto de 8 núcleos de CPU:
+A fim de medir a performance dos \textit{P-Cores} e \tetxit{E-Cores} ao execução a multiplicação de matrizes 4 cenários de testes foram projetados. Conforme mencionado na seção \ref{secao_algoritmo}, 8 tarefas são criadas e escalonadas para computação, logo cada um dos cenários é composto por um conjunto de 8 núcleos de CPU:
 
-Com o objetivo de avaliar o desempenho dos \textit{P-cores} e \textit{E-cores} na execução da multiplicação de matrizes, foram projetados quatro cenários de teste. Conforme detalhado na Seção \ref{secao_algoritmo}, são geradas oito tarefas computacionais simultâneas, portanto, cada cenário é composto por um conjunto distinto de oito núcleos de processamento.
+Com o objetivo de avaliar o desempenho dos \textit{P-Cores} e \textit{E-cores} na execução da multiplicação de matrizes, foram projetados quatro cenários de teste. Conforme detalhado na Seção \ref{secao_algoritmo}, são geradas oito tarefas computacionais simultâneas, portanto, cada cenário é composto por um conjunto distinto de oito núcleos de processamento.
 
-O \textit{hardware} utilizado possui CPU com 20 núcleos e seus \textit{IDs} lógicos variam de 0 a 27.  \textit{IDs} de 0 a 15 são de núcleos  \textit{P-core}, de modo que cada par sequencial de  \textit{IDs} (0-1, 2-3, ..., 14-15) compartilha os recursos de um mesmo núcleo físico. Já  \textit{IDs} de 16 a 27 correspondem aos núcleos  \textit{E-core}, onde cada identificador representa estritamente um núcleo físico.
+O \textit{hardware} utilizado possui CPU com 20 núcleos e seus \textit{IDs} lógicos variam de 0 a 27.  \textit{IDs} de 0 a 15 são de núcleos  \textit{P-Core}, de modo que cada par sequencial de  \textit{IDs} (0-1, 2-3, ..., 14-15) compartilha os recursos de um mesmo núcleo físico. Já  \textit{IDs} de 16 a 27 correspondem aos núcleos  \textit{E-core}, onde cada identificador representa estritamente um núcleo físico.
 
 Abaixo a descrição do cenários de testes:
 
 \begin{description}
-	\item[\texttt{8P\_HT\_OFF}:] Utiliza 8 \textit{P-cores} com \textit{Hyper-Threading} desabilitado (1 \textit{thread} por núcleo físico). Os IDs utilizados são \path{{0, 2, 4, 6, 8, 10, 12, 14}}.
+	\item[\texttt{8P\_HT\_OFF}:] Utiliza 8 \textit{P-Cores} com \textit{Hyper-Threading} desabilitado (1 \textit{thread} por núcleo físico). Os IDs utilizados são \path{{0, 2, 4, 6, 8, 10, 12, 14}}.
 	
-	\item[\texttt{4P\_HT\_ON}:] Utiliza 4 \textit{P-cores} com \textit{Hyper-Threading} habilitado (2 \textit{threads} por núcleo físico), totalizando 8 threads lógicas. Os IDs utilizados são \path{{0, 1, 2, 3, 4, 5, 6, 7}}.
+	\item[\texttt{4P\_HT\_ON}:] Utiliza 4 \textit{P-Cores} com \textit{Hyper-Threading} habilitado (2 \textit{threads} por núcleo físico), totalizando 8 threads lógicas. Os IDs utilizados são \path{{0, 1, 2, 3, 4, 5, 6, 7}}.
 	
-	\item[\texttt{4P\_4E\_HT\_OFF}:] Configuração híbrida com 4 \textit{P-cores} e 4 \textit{E-cores}. Os IDs utilizados combinam núcleos de performance \path{{0, 2, 4, 6}} e de eficiência \path{{16, 17, 18, 19}}.
+	\item[\texttt{4P\_4E\_HT\_OFF}:] Configuração híbrida com 4 \textit{P-Cores} e 4 \textit{E-Cores}. Os IDs utilizados combinam núcleos de performance \path{{0, 2, 4, 6}} e de eficiência \path{{16, 17, 18, 19}}.
 	
-	\item[\texttt{8E}:] Utiliza 8 \textit{E-cores} (1 \textit{thread} por núcleo físico). Os IDs lógicos utilizados são \path{{16, 17, 18, 19, 20, 21, 22, 23}}.
+	\item[\texttt{8E}:] Utiliza 8 \textit{E-Cores} (1 \textit{thread} por núcleo físico). Os IDs lógicos utilizados são \path{{16, 17, 18, 19, 20, 21, 22, 23}}.
 \end{description}
 
 Em todos os cenários avaliados, optou-se pela manutenção da tecnologia \textit{Intel Turbo Boost} habilitada, permitindo que a frequência de operação atinga os valores máximos permitidos. A desabilitação deste recurso confinaria os núcleos à sua frequência base \cite{IntelTurbo}, o que comprometeria os experimentos. Embora reconheça-se que a elevação da temperatura da CPU possa levar à redução forçada da frequência (\textit{thermal throttling}), este risco foi mitigado com intervalos de resfriamento de dez segundos entre as execuções consecutivas.
@@ -173,18 +196,19 @@ Além da seleção da versão adequada do interpretador e da parametrização pa
 \section{Projeto Experimental}
 Para criar o projeto experimental, foram definidos 5 tamanhos de matriz de entrada: 1000, 2000, 4000, 6000 e 8000. Dimensões superiores a 8000 foram desconsideradas devido às restrições de memória da plataforma (evitando estou de memória). O experimento avaliou 4 cenários distintos de alocação de núcleos de CPU. Para cada combinação de cenário $\times$ tamanho de matriz, foram realizadas 30 execuções, visando aproximar a distribuição dos dados de uma normal (Teorema do Limite Central) e assegurar um intervalo de confiança robusto. 
 
-As 600 configurações resultantes (4 cenários $\times$ 5 tamanhos $\times$ 30 repetições) foram geradas via script e a sua  ordem foi aleatorizada. Esse embaralhamento é crucial para mitigar correlações temporais ou vieses entre as execuções. Adicionalmente, inseriu-se uma etapa de \textit{warm-up} no início da bateria de testes, composta por 6 execuções com matriz de tamanho 8000 e oito \textit{P-cores} de \textit{thread} única. O objetivo desta etapa é permitir que a CPU atinja um estado estável de temperatura, sendo os resultados destas execuções descartados posteriormente. 
+As 600 configurações resultantes (4 cenários $\times$ 5 tamanhos $\times$ 30 repetições) foram geradas via script e a sua  ordem foi aleatorizada. Esse embaralhamento é crucial para mitigar correlações temporais ou vieses entre as execuções. Adicionalmente, inseriu-se uma etapa de \textit{warm-up} no início da bateria de testes, composta por 6 execuções com matriz de tamanho 8000 e oito \textit{P-Cores} de \textit{thread} única. O objetivo desta etapa é permitir que a CPU atinja um estado estável de temperatura, sendo os resultados destas execuções descartados posteriormente. 
 
 Por fim, para garantir a reprodutibilidade e a igualdade da comparação, as três implementações fixaram a mesma semente (np.random.seed(42)). Isso assegura que todas as implementações processem exatamente as mesmas matrizes de entrada.
 
 O resultado final é um arquivo .csv contendo 606 configurações: as 6 primeiras de \textit{warm-up} e as 600 restantes pertencentes ao experimento. 
+
 
 %----------------------------------------------------------------------------------
 \section{Análise dos Resultados}
 Esta seção destina-se à análise dos resultados obtidos ao executar o projeto experimental nas três implementações. 
 
 \subsection{Evolução da Temperatura}
-Como ponto de partida para a avaliação de desempenho, examinou-se o comportamento térmico da CPU.
+Como ponto de partida para a avaliação de desempenho, examinou-se o comportamento térmico da CPU à medida que as execuções são realizadas.
 
 \begin{figure}[h]
 	\centering
@@ -194,15 +218,62 @@ Como ponto de partida para a avaliação de desempenho, examinou-se o comportame
 	\label{fig:temp_evolution}
 \end{figure}
 
-A Figura~\ref{fig:temp_evolution} mostra que as temperaturas percebidas pelas abordagens de Multiprocessing e Dask apresentaram temperaturas médias de 74.1°C e 74.8°C, respectivamente. Já a implementação com Threading apresentou temperaturas médias de 45.1°C. Este é um primeiro indicativo de que, no geral, a implementação com Threading foi mais eficiente, pois conseguiu concluir os cálculos matemáticos sem esquentar tanto a CPU.
+A Figura~\ref{fig:temp_evolution} já incorpora o incremento térmico gerado pela execução inicial das seis cargas de trabalho utilizadas para o \textit{warm-up}. Observa-se que as estratégias baseadas em \textit{Multiprocessing} e \textit{Dask} alcançaram temperaturas médias de $74.2^\circ\text{C}$ e $74.8^\circ\text{C}$, respectivamente. Esses valores refletem um uso intensivo dos núcleos de processamento, associado ao custo de ativar e manter múltiplos processos simultâneos, cada qual com seu próprio contexto de execução. Em contrapartida, a implementação com \textit{Threading} apresentou temperatura média significativamente inferior, de $45.1^\circ\text{C}$.
 
-Conforme ilustrado na Figura~\ref{fig:temp_evolution}, as estratégias de \textit{Multiprocessing} e \textit{Dask} resultaram em temperaturas médias de $74.1^\circ\text{C}$ e $74.8^\circ\text{C}$, evidenciando uso intensivo dos núcleos de processamento. Por outro lado, a implementação via \textit{Threading} apresentou uma média de $45.1^\circ\text{C}$. Essa disparidade térmica indica que o modelo de \textit{Threading} demandou menos recursos da CPU, possivelmente devido às limitações de concorrência inerentes ao GIL, resultando em menor dissipação de calor.
+Essa diferença evidencia que o modelo baseado em \textit{threads} impôs menor demanda à CPU. Tal comportamento decorre, possivelmente, das limitações de concorrência introduzidas pelo GIL, que restringe a execução paralela efetiva de trechos de código em Python, reduzindo o nível de competição entre unidades de processamento e, consequentemente, a dissipação de calor. Além disso, a política de escalonamento do \textit{kernel} tende a distribuir threads de maneira mais balanceada entre os núcleos disponíveis, o que reduz picos de carga característicos de abordagens que utilizam múltiplos processos independentes. Esses fatores combinados explicam a menor elevação térmica observada na estratégia de \textit{Threading}.
 
-\subsection{Tempo de execução}
+\subsection{Tempo de execução por cenário}
 
-Mostrar 5 gráficos, cada um com 3 bloxplots, um de cada script. Cada gráfico é de um tamanho de matrizes diferente.
+Inicialmente, realizou-se a análise dos tempos médios de execução para os quatro cenários considerando matrizes de tamanho 1000 e 2000. Essa segmentação foi necessária pois, a partir do tamanho 4000, observa-se um aumento expressivo na ordem de grandeza dos tempos, o que prejudicaria a escala visual e a comparação detalhada dos casos menores.
 
-Mostrar 3 gráficos, um de cada script, gráfico scatter, com acúmulo de pontos para cada tamanho de matriz
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/line_plot_tempo_por_cenario_1000_2000_ci95.pdf}
+	\caption{Tempo Médio de Execução (Matrizes 1000 e 2000) - I.C. 95\%}
+	\label{fig:line_plot_tempo_por_cenario_1000_2000_ci95}
+\end{figure}
+
+Ao analisar a Figura~\ref{fig:line_plot_tempo_por_cenario_1000_2000_ci95}, observa-se o comportamento dos três scripts nos quatro cenários propostos. A abordagem de \textit{Threading} demonstrou desempenho superior, apresentando os menores tempos médios em todos os casos.
+
+Na comparação entre \textit{Multiprocessing} e \textit{Dask} para matrizes de tamanho 1000 e 2000, nota-se um comportamento similar. O \textit{Multiprocessing} mostrou-se ligeiramente mais eficiente, sem sobreposição dos intervalos de confiança de 95\% em relação ao Dask, o que indica que \textit{Multiprocesing} é estatisticamente superior nestes casos.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/line_plot_tempo_por_cenario_4000_6000_8000_ci95.pdf}
+	\caption{Tempo Médio de Execução (Matrizes 4000, 6000 e 8000) - I.C. 95\%}
+	\label{fig:line_plot_tempo_por_cenario_4000_6000_8000_ci95}
+\end{figure}
+
+Entretanto, a análise da Figura~\ref{fig:line_plot_tempo_por_cenario_4000_6000_8000_ci95} revela uma inversão de tendência. Para matrizes de tamanho 4000 e 6000, o \textit{Dask} supera o desempenho do \textit{Multiprocessing} em quase todos os cenários (exceto em 4P\_HT\_ON).
+
+Esse comportamento pode ser explicado pela forma como ocorre a gestão de recursos. Enquanto o \textit{Multiprocessing} pode ser forçado a utilizar todos os núcleos disponíveis (incluindo os \textit{E-cores} de menor desempenho), o \textit{Dask} gerencia um \textit{pool} de recursos onde seu \textit{Scheduler} aloca tarefas dinamicamente. Essa flexibilidade permite que o \textit{Dask} priorize o uso de \textit{P-Cores}, resultando em ganho de performance, comportamento especialmente visível no cenário 4P\_4E\_HT\_OFF.
+
+\subsection{Tempo de execução por tamanho de matriz}
+A Figura~\ref{fig:histograma_tempo_por_matix_size} detalha os tempos médios de execução para os três \textit{scripts}, segmentados pelos cinco tamanhos de matriz analisados. Reafirma-se o comportamento observado anteriormente, onde o \textit{Dask} apresenta tempo de execução médio superior ao \textit{Multiprocessing} e \textit{Threading} para cargas menores (1000 e 2000). Embora o desempenho entre os cenários seja similar, nota-se uma elevação nos tempos totais quando o \textit{Hyper-Threading} está ativo (4P\_HT\_ON) ou quando a execução ocorre exclusivamente em \textit{E-Cores} (8E).
+
+Tal comportamento é esperado, pois, no caso do \textit{Hyper-Threading}, ocorre o compartilhamento dos recursos do núcleo físico (como cache e unidades de execução) entre dois fluxos de processamento, gerando contenção que não existe na execução \textit{single-thread} por núcleo. Já no cenário de \textit{E-Cores}, o aumento do tempo justifica-se pelas especificações de hardware, uma vez que esses núcleos operam em frequências menores e possuem arquitetura voltada para eficiência energética, não para alto desempenho.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/histograma_tempo_por_matix_size.pdf}
+	\caption{Tempo Médio de Execução por Tamanho de Matriz - I.C. 95\%}
+	\label{fig:histograma_tempo_por_matix_size}
+\end{figure}
+
+Adicionalmente, observa-se que, para matrizes com dimensão superior a 4000, a abordagem de \textit{Multiprocessing} sofre severa degradação de desempenho ao utilizar \textit{E-Cores}. Com o aumento da carga computacional, o sistema operacional aloca processos nesses núcleos de menor capacidade, criando um gargalo. Este efeito é mitigado no \textit{Dask}, cujo escalonador dinâmico gerencia um \textit{pool} de recursos e prioriza a alocação de tarefas nos \textit{P-Cores}, evitando o uso ineficiente dos \textit{E-Cores} quando possível. Contudo, em cenários onde o \textit{pool} é restrito exclusivamente a \textit{E-Cores} (Cenário 8E), o aumento no tempo de execução do \textit{Dask} torna-se inevitável.
+
+\subsection{Tempo de execução por script}¨
+
+A Figura~\ref{fig:line_tempo_por_scripts} destaca o comportamento do sistema para cargas de trabalho intensivas (matriz de tamanho 8000). Nota-se que o cenário 4P\_HT\_ON (\textit{Hyper-Threading} habilitado) posicionou-se entre os menores tempos médios de execução. Estatisticamente, para o script de \textit{Threading}, os cenários baseados exclusivamente em \textit{P-Cores} (4P\_HT\_ON e 8P\_HT\_OFF) apresentaram desempenho equivalente, por haver sobreposição de intervalos de confiança. O mesmo fenômeno de equivalência estatística ocorreu entre os cenários que envolvem \textit{E-Cores} (4P\_4E\_HT\_OFF} e 8E).
+
+Entretanto, há nítida diferença de desempenho entre os grupos com e sem \textit{E-Cores}. À medida que o tamanho da matriz cresce, a execução torna-se estritamente limitada pela CPU (\textit{CPU-bound}). Nessas condições, o \textit{overhead} de criação de processos ou \textit{threads} torna-se irrelevante frente ao tempo total de processamento. Consequentemente, a performance passa a depender diretamente da frequência de \textit{clock} dos núcleos. Como os \textit{E-Cores} operam em frequências inferiores e possuem arquitetura simplificada, eles agem como gargalos em tarefas paralelizadas simetricamente, elevando o tempo médio total quando comparados aos cenários de \textit{P-Cores} puros.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/line_tempo_por_scripts.pdf}
+	\caption{Tempo Médio de Execução por Script (Matriz 8000) - I.C. 95\%}
+	\label{fig:line_tempo_por_scripts}
+\end{figure}
 
 %----------------------------------------------------------------------------------
 \section{Reprodutibilidade}
@@ -211,6 +282,8 @@ Mostrar 3 gráficos, um de cada script, gráfico scatter, com acúmulo de pontos
 
 %----------------------------------------------------------------------------------
 \section{Conclusões}
+
+
 
 %----------------------------------------------------------------------------------
 \section{Sectioning Commands}
