@@ -58,8 +58,6 @@ Para instalar a pilha de software basta executar os comandos:
 	pip install -r requirements_py3.14t.txt
 	sudo xargs apt-get install -y < system_packages.tx
 
-```
-
 ## Autor
 
 João Luiz Grave Gross\
