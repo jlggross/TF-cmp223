@@ -30,6 +30,23 @@
 	showstringspaces=false,
 }
 
+\lstdefinestyle{bashstyle}{
+	language=bash,
+	basicstyle=\ttfamily\small,
+	backgroundcolor=\color{gray!10},
+	frame=single,
+	breaklines=true,
+	keywordstyle=\color{blue},
+	commentstyle=\color{green!40!black},
+	stringstyle=\color{red},
+	showstringspaces=false,
+	captionpos=b,
+	% ADICIONE ESTAS LINHAS ABAIXO:
+	inputencoding=utf8,
+	extendedchars=true,
+	literate={á}{{\'a}}1 {ã}{{\~a}}1 {é}{{\'e}}1 {ç}{{\c{c}}}1 {õ}{{\~o}}1 {ê}{{\^e}}1 {ó}{{\'o}}1 {ú}{{\'u}}1 {í}{{\'i}}1
+}
+
 
 \setcopyright{none}
 \copyrightyear{2025}
@@ -51,7 +68,7 @@
 
 %%
 %% The "title" command has an optional parameter,
-\title{Análise do desempenho de uma aplciação de multiplicação de matrizes entre P-Core e E-Cores}
+\title{Análise do desempenho de aplicações \textit{CPU-bound} entre \textit{P-Core} e \textit{E-Cores}}
 
 %%
 %% The "author" command and its associated commands are used to define
@@ -80,7 +97,7 @@
 %% The abstract is a short summary of the work to be presented in the
 %% article.
 \begin{abstract}
-  [TODO]
+A consolidação de arquiteturas de processadores híbridos, combinando núcleos de desempenho (\textit{P-Cores}) e de eficiência (\textit{E-Cores}), impõe novos desafios para a otimização de \textit{software}, especialmente em linguagens com limitações de concorrência como Python. Este trabalho avalia o impacto dessa heterogeneidade de \textit{hardware} no desempenho de aplicações \textit{CPU-bound}, utilizando a multiplicação de matrizes como estudo de caso. Foram comparadas três estratégias de paralelismo: a biblioteca padrão \textit{Multiprocessing}, o escalonador dinâmico \textit{Dask} e o modo experimental \textit{Free-Threading} (Python 3.14), sob diferentes configurações de afinidade de núcleo e tamanhos de carga. Os experimentos demonstraram que, em cargas de trabalho intensivas, o uso indiscriminado de \textit{E-Cores} atua como gargalo para o \textit{Multiprocessing}, enquanto o \textit{Dask} mitiga esse efeito através de escalonamento dinâmico. Contudo, a implementação \textit{Free-Threading} apresentou superioridade absoluta, entregando os menores tempos de execução e maior eficiência energética, com temperatura média de operação cerca de $30^\circ\text{C}$ inferior às demais abordagens. Conclui-se que a remoção do \textit{Global Interpreter Lock} (GIL) aliada a uma gestão consciente da topologia da CPU são fundamentais para maximizar o desempenho em arquiteturas modernas.
 \end{abstract}
 
 %\ccsdesc[500]{Do Not Use This Code~Generate the Correct Terms for Your Paper}
@@ -102,11 +119,11 @@
 %% information and builds the first part of the formatted document.
 \maketitle
 
+%----------------------------------------------------------------------------------
 \section{Introdução}
-[TODO]
-P-cores performance
-E-cores energia/econômico
-aplicação de multiplicação de matrizes
+A indústria de processadores passou recentemente por uma mudança de paradigma com a consolidação de arquiteturas híbridas, como a \textit{Intel Hybrid Technology} \cite{IntelHybrid}. Esse modelo abandona a homogeneidade tradicional para integrar, no mesmo encapsulamento, núcleos de alta performance (\textit{P-Cores}), projetados para tarefas críticas e de baixa latência, e núcleos de eficiência (\textit{E-Cores}), otimizados para tarefas de fundo e economia energética. Embora essa heterogeneidade maximize a relação desempenho/\textit{watt}, ela introduz uma nova camada de complexidade para o desenvolvimento de \textit{software}, exigindo que algoritmos e sistemas operacionais orquestrem corretamente a alocação de tarefas para evitar gargalos de desempenho decorrentes do uso inadequado dos núcleos.
+
+Nesse contexto, este trabalho utiliza a multiplicação de matrizes como carga de trabalho estritamente limitada pela CPU (\textit{CPU-bound}) para avaliar o comportamento dessa arquitetura. Devido à sua natureza altamente paralelizável e ao uso intensivo de unidades de ponto flutuante, esse cenário permite estressar tanto \textit{P-Cores} quanto \textit{E-Cores}, além de investigar a influência do \textit{Hyper-Threading} no desempenho computacional. A análise compara como estratégias consolidadas em Python (\textit{Multiprocessing} e \textit{Dask}) e a nova abordagem \textit{Free-Threading}, viabilizada pela remoção da trava do \textit{Global Interpreter Lock} (GIL) na versão 3.14.0 do interpretador, gerenciam a distribuição de carga e o tempo de execução frente à assimetria e aos recursos de concorrência do \textit{hardware}.
 
 %----------------------------------------------------------------------------------
 \section{Plataforma: Hardware e Sistema Operacional (SO)}
@@ -142,7 +159,7 @@ Todas as implementações registram, ao término de cada execução, o horário 
 
 %----------------------------------------------------------------------------------
 \section{Cenários dos Testes}
-A fim de medir a performance dos \textit{P-Cores} e \tetxit{E-Cores} ao execução a multiplicação de matrizes 4 cenários de testes foram projetados. Conforme mencionado na seção \ref{secao_algoritmo}, 8 tarefas são criadas e escalonadas para computação, logo cada um dos cenários é composto por um conjunto de 8 núcleos de CPU:
+A fim de medir a performance dos \textit{P-Cores} e \textit{E-Cores} ao execução a multiplicação de matrizes 4 cenários de testes foram projetados. Conforme mencionado na Seção~\ref{secao_algoritmo}, 8 tarefas são criadas e escalonadas para computação, logo cada um dos cenários é composto por um conjunto de 8 núcleos de CPU:
 
 Com o objetivo de avaliar o desempenho dos \textit{P-Cores} e \textit{E-cores} na execução da multiplicação de matrizes, foram projetados quatro cenários de teste. Conforme detalhado na Seção \ref{secao_algoritmo}, são geradas oito tarefas computacionais simultâneas, portanto, cada cenário é composto por um conjunto distinto de oito núcleos de processamento.
 
@@ -222,13 +239,13 @@ A Figura~\ref{fig:temp_evolution} já incorpora o incremento térmico gerado pel
 
 Essa diferença evidencia que o modelo baseado em \textit{threads} impôs menor demanda à CPU. Tal comportamento decorre, possivelmente, das limitações de concorrência introduzidas pelo GIL, que restringe a execução paralela efetiva de trechos de código em Python, reduzindo o nível de competição entre unidades de processamento e, consequentemente, a dissipação de calor. Além disso, a política de escalonamento do \textit{kernel} tende a distribuir threads de maneira mais balanceada entre os núcleos disponíveis, o que reduz picos de carga característicos de abordagens que utilizam múltiplos processos independentes. Esses fatores combinados explicam a menor elevação térmica observada na estratégia de \textit{Threading}.
 
-\subsection{Tempo de execução por cenário}
 
+\subsection{Tempo de execução por cenário}
 Inicialmente, realizou-se a análise dos tempos médios de execução para os quatro cenários considerando matrizes de tamanho 1000 e 2000. Essa segmentação foi necessária pois, a partir do tamanho 4000, observa-se um aumento expressivo na ordem de grandeza dos tempos, o que prejudicaria a escala visual e a comparação detalhada dos casos menores.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=1\textwidth]{images/line_plot_tempo_por_cenario_1000_2000_ci95.pdf}
+	\includegraphics[width=0.9\textwidth]{images/line_plot_tempo_por_cenario_1000_2000_ci95.pdf}
 	\caption{Tempo Médio de Execução (Matrizes 1000 e 2000) - I.C. 95\%}
 	\label{fig:line_plot_tempo_por_cenario_1000_2000_ci95}
 \end{figure}
@@ -239,7 +256,7 @@ Na comparação entre \textit{Multiprocessing} e \textit{Dask} para matrizes de 
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=1\textwidth]{images/line_plot_tempo_por_cenario_4000_6000_8000_ci95.pdf}
+	\includegraphics[width=0.9\textwidth]{images/line_plot_tempo_por_cenario_4000_6000_8000_ci95.pdf}
 	\caption{Tempo Médio de Execução (Matrizes 4000, 6000 e 8000) - I.C. 95\%}
 	\label{fig:line_plot_tempo_por_cenario_4000_6000_8000_ci95}
 \end{figure}
@@ -255,7 +272,7 @@ Tal comportamento é esperado, pois, no caso do \textit{Hyper-Threading}, ocorre
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=1\textwidth]{images/histograma_tempo_por_matix_size.pdf}
+	\includegraphics[width=0.9\textwidth]{images/histograma_tempo_por_matix_size.pdf}
 	\caption{Tempo Médio de Execução por Tamanho de Matriz - I.C. 95\%}
 	\label{fig:histograma_tempo_por_matix_size}
 \end{figure}
@@ -264,49 +281,59 @@ Adicionalmente, observa-se que, para matrizes com dimensão superior a 4000, a a
 
 \subsection{Tempo de execução por script}¨
 
-A Figura~\ref{fig:line_tempo_por_scripts} destaca o comportamento do sistema para cargas de trabalho intensivas (matriz de tamanho 8000). Nota-se que o cenário 4P\_HT\_ON (\textit{Hyper-Threading} habilitado) posicionou-se entre os menores tempos médios de execução. Estatisticamente, para o script de \textit{Threading}, os cenários baseados exclusivamente em \textit{P-Cores} (4P\_HT\_ON e 8P\_HT\_OFF) apresentaram desempenho equivalente, por haver sobreposição de intervalos de confiança. O mesmo fenômeno de equivalência estatística ocorreu entre os cenários que envolvem \textit{E-Cores} (4P\_4E\_HT\_OFF} e 8E).
+A Figura~\ref{fig:line_tempo_por_scripts} destaca o comportamento do sistema para cargas de trabalho intensivas (matriz de tamanho 8000). Nota-se que o cenário 4P\_HT\_ON (\textit{Hyper-Threading} habilitado) posicionou-se entre os menores tempos médios de execução. Estatisticamente, para o script de \textit{Threading}, os cenários baseados exclusivamente em \textit{P-Cores} (4P\_HT\_ON e 8P\_HT\_OFF) apresentaram desempenho equivalente, por haver sobreposição de intervalos de confiança. O mesmo fenômeno de equivalência estatística ocorreu entre os cenários que envolvem \textit{E-Cores} (4P\_4E\_HT\_OFF e 8E).
 
 Entretanto, há nítida diferença de desempenho entre os grupos com e sem \textit{E-Cores}. À medida que o tamanho da matriz cresce, a execução torna-se estritamente limitada pela CPU (\textit{CPU-bound}). Nessas condições, o \textit{overhead} de criação de processos ou \textit{threads} torna-se irrelevante frente ao tempo total de processamento. Consequentemente, a performance passa a depender diretamente da frequência de \textit{clock} dos núcleos. Como os \textit{E-Cores} operam em frequências inferiores e possuem arquitetura simplificada, eles agem como gargalos em tarefas paralelizadas simetricamente, elevando o tempo médio total quando comparados aos cenários de \textit{P-Cores} puros.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=1\textwidth]{images/line_tempo_por_scripts.pdf}
+	\includegraphics[width=0.9\textwidth]{images/line_tempo_por_scripts.pdf}
 	\caption{Tempo Médio de Execução por Script (Matriz 8000) - I.C. 95\%}
 	\label{fig:line_tempo_por_scripts}
 \end{figure}
 
 %----------------------------------------------------------------------------------
 \section{Reprodutibilidade}
-- github: link
-- pilha de software: GUIX/NIX
+Visando garantir a reprodutibilidade dos experimentos toda a pilha de software utilizada foi salva e exportada para arquivo de texto e inserida no repositório de arquivos deste trabalho no Github \cite{GitHub}.
+
+\begin{verbatim}
+	# 1. Exportar dependências do ambiente Python 3.12
+	pyenv shell 3.12.12
+	pip freeze > requirements_py3.12.txt
+	
+	# 2. Exportar dependências do ambiente Python 3.14 (Free-threaded)
+	pyenv shell 3.14.0t
+	pip freeze > requirements_py3.14t.txt
+	
+	# 3. Exportar pacotes do sistema (Ubuntu) instalados manualmente
+	apt-mark showmanual > system_packages.txt
+\end{verbatim}
+
+Para instalar a pilha de software basta executar os comandos:
+
+\begin{verbatim}
+	pip install -r requirements_py3.12.txt
+	pip install -r requirements_py3.14t.txt
+	sudo xargs apt-get install -y < system_packages.tx
+\end{verbatim}
+
 
 %----------------------------------------------------------------------------------
 \section{Conclusões}
 
+Este estudo avaliou o desempenho de três estratégias de paralelismo em \textit{Python} — \textit{Multiprocessing}, \textit{Dask} e \textit{Threading} (modo \textit{free-threading}) — sob a uma arquitetura de processadores híbrida Intel Core de 14ª Geração. A partir dos dados experimentais, foi possível extrair inferências determinantes sobre como o \textit{hardware} e as implementações interagem com cargas intensivas em CPU, como a multiplicação de matrizes.
+
+Dentre as implementações a versão \textit{Python 3.14.0t} demonstrou superioridade consistente. Ela apresentou os menores tempos de execução em todos os cenários e tamanhos de matriz, aliando alto desempenho à eficiência energética, evidenciada pela temperatura média de operação significativamente inferior ($\approx 45^\circ\text{C}$ contra $\approx 74^\circ\text{C}$ das demais). Isso sugere que a remoção do GIL e a utilização de memória compartilhada (\textit{Zero Copy}) eliminam gargalos críticos de serialização e \textit{overhead} de comunicação, tornando-se uma abordagem promissora para computação paralela em Python no futuro próximo.
+
+Comparando \textit{Multiprocessing} e \textit{Dask}, observou-se um \textit{trade-off} claro. O \textit{Multiprocessing} é mais eficiente para matrizes menores (até 2000), onde o \textit{overhead} de gestão do \textit{Dask} penaliza o desempenho. Contudo, em cenários de \textit{hardware} heterogêneo (mistura de \textit{P-Cores} e \textit{E-Cores}) com grandes volumes de dados, o \textit{Dask} superou o \textit{Multiprocessing}. A inteligência do escalonador do \textit{Dask} permitiu evitar, quando possível, a alocação de tarefas críticas em núcleos de eficiência, enquanto o \textit{Multiprocessing}, dependente do escalonador genérico do SO, sofreu degradação de performance ao distribuir tarefas pesadas para os \textit{E-Cores}.
+
+Assim, no que se refere à arquitetura de \textit{hardware} (\textit{P-Cores} vs. \textit{E-Cores}), a heterogeneidade impõe desafios para algoritmos de divisão simétrica de tarefas. Em cargas de trabalho estritamente \textit{CPU-bound}, os \textit{E-Cores} atuam como gargalos. Quando uma tarefa é dividida igualmente entre núcleos de performance e eficiência, o tempo total de execução é limitado pelo núcleo mais lento. Os experimentos mostraram que o uso de \textit{Hyper-Threading} nos \textit{P-Cores} oferece desempenho competitivo e estatisticamente equivalente ao uso de núcleos físicos dedicados em certas configurações, enquanto o uso exclusivo de \textit{E-Cores} resulta invariavelmente nos piores tempos devido à menor frequência de operação e arquitetura simplificada.
+
+Por fim, o tamanho de matriz apresentou impacto direto nos experimentos. Para entradas pequenas, o tempo de execução médio foi dominado pelo custo de criação e gerenciamento de processos/threads. À medida que a matriz cresce (acima de 4000), o problema torna-se puramente computacional. A partir deste momento a eficiência do código é fortemente dependente da frequência bruta da CPU, destacando as limitações dos \textit{E-Cores} e a vantagem da arquitetura de memória compartilhada do \textit{free-threading}.
+
+Em suma, para maximizar o desempenho em arquiteturas híbridas, deve-se priorizar implementações que evitem a cópia excessiva de dados e, idealmente, que possuam consciência da topologia do processador para evitar a subutilização de recursos causada pela diferenças de potência entre \textit{P-Cores} e \textit{E-Cores}.
 
 
-%----------------------------------------------------------------------------------
-\section{Sectioning Commands}
-
-\subsection{Subsection}
-\label{sec:subsection}
-
-This is a subsection.
-
-\subsubsection{Subsubsection}
-\label{sec:subsubsection}
-
-This is a subsubsection.
-
-\paragraph{Paragraph}
-
-This is a paragraph.
-
-\subparagraph{Subparagraph}
-
-This is a subparagraph.
-
-%%
 %% The next two lines define the bibliography style to be used, and
 %% the bibliography file.
 \bibliographystyle{ACM-Reference-Format}
@@ -316,3 +343,7 @@ This is a subparagraph.
 \endinput
 %%
 %% End of file `sample-acmsmall.tex'.
+
+
+
+

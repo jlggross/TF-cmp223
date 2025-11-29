@@ -1,7 +1,0 @@
-- Intel SpeedStep Technology: Disabled - This deature allows the sustem to dynammicaly adjust processor voltage and core frequency, decreasing average power consumption and heat production.
-
-- Intel Turbo Boost Technology: Disabled - This option enables or disables the Intel TurboBoost mode of the processor.
-* Disabled: Does not allow the TurboBoost driver to increase the performance state of the processor above the standard performance.
-* Enabled: Allows the Intel TurboBoost driver to increase the performance of the CPU or graphics processor.
-
-- Intel Hyper-Threading Technology: Disabled - When ON this feature uses processor resources more efficiently, enabling multiple threads to run on each core.
