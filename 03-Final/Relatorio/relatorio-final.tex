@@ -97,7 +97,7 @@
 %% The abstract is a short summary of the work to be presented in the
 %% article.
 \begin{abstract}
-A consolidação de arquiteturas de processadores híbridos, combinando núcleos de desempenho (\textit{P-Cores}) e de eficiência (\textit{E-Cores}), impõe novos desafios para a otimização de \textit{software}, especialmente em linguagens com limitações de concorrência como Python. Este trabalho avalia o impacto dessa heterogeneidade de \textit{hardware} no desempenho de aplicações \textit{CPU-bound}, utilizando a multiplicação de matrizes como estudo de caso. Foram comparadas três estratégias de paralelismo: a biblioteca padrão \textit{Multiprocessing}, o escalonador dinâmico \textit{Dask} e o modo experimental \textit{Free-Threading} (Python 3.14), sob diferentes configurações de afinidade de núcleo e tamanhos de carga. Os experimentos demonstraram que, em cargas de trabalho intensivas, o uso indiscriminado de \textit{E-Cores} atua como gargalo para o \textit{Multiprocessing}, enquanto o \textit{Dask} mitiga esse efeito através de escalonamento dinâmico. Contudo, a implementação \textit{Free-Threading} apresentou superioridade absoluta, entregando os menores tempos de execução e maior eficiência energética, com temperatura média de operação cerca de $30^\circ\text{C}$ inferior às demais abordagens. Conclui-se que a remoção do \textit{Global Interpreter Lock} (GIL) aliada a uma gestão consciente da topologia da CPU são fundamentais para maximizar o desempenho em arquiteturas modernas.
+A consolidação de arquiteturas de processadores híbridos, combinando núcleos de desempenho (\textit{P-Cores}) e de eficiência (\textit{E-Cores}), impõe novos desafios para a otimização de \textit{software}, especialmente em linguagens com limitações de concorrência como \textit{Python}. Este trabalho avalia o impacto dessa heterogeneidade de \textit{hardware} no desempenho de aplicações \textit{CPU-bound}, utilizando a multiplicação de matrizes como estudo de caso. Foram comparadas três estratégias de paralelismo: a biblioteca padrão \textit{Multiprocessing}, o escalonador dinâmico \textit{Dask} e o modo experimental \textit{Free-Threading} (Python 3.14), sob diferentes configurações de afinidade de núcleo e tamanhos de carga. Os experimentos demonstraram que, em cargas de trabalho intensivas, o uso indiscriminado de \textit{E-Cores} atua como gargalo para o \textit{Multiprocessing}, enquanto o \textit{Dask} mitiga esse efeito através de escalonamento dinâmico. Contudo, a implementação \textit{Free-Threading} apresentou superioridade absoluta, entregando os menores tempos de execução e maior eficiência energética, com temperatura média de operação cerca de $30^\circ\text{C}$ inferior às demais abordagens. Conclui-se que a remoção do \textit{Global Interpreter Lock} (GIL) aliada a uma gestão consciente da topologia da CPU são fundamentais para maximizar o desempenho em arquiteturas modernas.
 \end{abstract}
 
 %\ccsdesc[500]{Do Not Use This Code~Generate the Correct Terms for Your Paper}
@@ -159,22 +159,20 @@ Todas as implementações registram, ao término de cada execução, o horário 
 
 %----------------------------------------------------------------------------------
 \section{Cenários dos Testes}
-A fim de medir a performance dos \textit{P-Cores} e \textit{E-Cores} ao execução a multiplicação de matrizes 4 cenários de testes foram projetados. Conforme mencionado na Seção~\ref{secao_algoritmo}, 8 tarefas são criadas e escalonadas para computação, logo cada um dos cenários é composto por um conjunto de 8 núcleos de CPU:
-
 Com o objetivo de avaliar o desempenho dos \textit{P-Cores} e \textit{E-cores} na execução da multiplicação de matrizes, foram projetados quatro cenários de teste. Conforme detalhado na Seção \ref{secao_algoritmo}, são geradas oito tarefas computacionais simultâneas, portanto, cada cenário é composto por um conjunto distinto de oito núcleos de processamento.
 
-O \textit{hardware} utilizado possui CPU com 20 núcleos e seus \textit{IDs} lógicos variam de 0 a 27.  \textit{IDs} de 0 a 15 são de núcleos  \textit{P-Core}, de modo que cada par sequencial de  \textit{IDs} (0-1, 2-3, ..., 14-15) compartilha os recursos de um mesmo núcleo físico. Já  \textit{IDs} de 16 a 27 correspondem aos núcleos  \textit{E-core}, onde cada identificador representa estritamente um núcleo físico.
+O \textit{hardware} utilizado possui CPU 28 núcleos lógicos com \textit{IDs} variando de 0 a 27.  \textit{IDs} de 0 a 15 são de núcleos  \textit{P-Core}, de modo que cada par sequencial de  \textit{IDs} (0-1, 2-3, ..., 14-15) compartilha os recursos de um mesmo núcleo físico. Já  \textit{IDs} de 16 a 27 correspondem aos núcleos  \textit{E-Core}, onde cada identificador representa estritamente um núcleo físico.
 
 Abaixo a descrição do cenários de testes:
 
 \begin{description}
-	\item[\texttt{8P\_HT\_OFF}:] Utiliza 8 \textit{P-Cores} com \textit{Hyper-Threading} desabilitado (1 \textit{thread} por núcleo físico). Os IDs utilizados são \path{{0, 2, 4, 6, 8, 10, 12, 14}}.
+	\item[\texttt{8P\_HT\_OFF}:] Utiliza 8 \textit{P-Cores} com \textit{Hyper-Threading} desabilitado (1 \textit{thread} por núcleo físico). Os \textit{IDs} utilizados são \path{{0, 2, 4, 6, 8, 10, 12, 14}}.
 	
-	\item[\texttt{4P\_HT\_ON}:] Utiliza 4 \textit{P-Cores} com \textit{Hyper-Threading} habilitado (2 \textit{threads} por núcleo físico), totalizando 8 threads lógicas. Os IDs utilizados são \path{{0, 1, 2, 3, 4, 5, 6, 7}}.
+	\item[\texttt{4P\_HT\_ON}:] Utiliza 4 \textit{P-Cores} com \textit{Hyper-Threading} habilitado (2 \textit{threads} por núcleo físico), totalizando 8 threads lógicas. Os \textit{IDs} utilizados são \path{{0, 1, 2, 3, 4, 5, 6, 7}}.
 	
-	\item[\texttt{4P\_4E\_HT\_OFF}:] Configuração híbrida com 4 \textit{P-Cores} e 4 \textit{E-Cores}. Os IDs utilizados combinam núcleos de performance \path{{0, 2, 4, 6}} e de eficiência \path{{16, 17, 18, 19}}.
+	\item[\texttt{4P\_4E\_HT\_OFF}:] Configuração híbrida com 4 \textit{P-Cores} e 4 \textit{E-Cores}. Os \textit{IDs} utilizados combinam núcleos de performance \path{{0, 2, 4, 6}} e de eficiência \path{{16, 17, 18, 19}}.
 	
-	\item[\texttt{8E}:] Utiliza 8 \textit{E-Cores} (1 \textit{thread} por núcleo físico). Os IDs lógicos utilizados são \path{{16, 17, 18, 19, 20, 21, 22, 23}}.
+	\item[\texttt{8E}:] Utiliza 8 \textit{E-Cores} (1 \textit{thread} por núcleo físico). Os \textit{IDs} lógicos utilizados são \path{{16, 17, 18, 19, 20, 21, 22, 23}}.
 \end{description}
 
 Em todos os cenários avaliados, optou-se pela manutenção da tecnologia \textit{Intel Turbo Boost} habilitada, permitindo que a frequência de operação atinga os valores máximos permitidos. A desabilitação deste recurso confinaria os núcleos à sua frequência base \cite{IntelTurbo}, o que comprometeria os experimentos. Embora reconheça-se que a elevação da temperatura da CPU possa levar à redução forçada da frequência (\textit{thermal throttling}), este risco foi mitigado com intervalos de resfriamento de dez segundos entre as execuções consecutivas.
@@ -183,16 +181,16 @@ Em todos os cenários avaliados, optou-se pela manutenção da tecnologia \texti
 %----------------------------------------------------------------------------------
 \section{Ambiente e Configurações}
 
-A orquestração e execução dos códigos foram realizadas utilizando o ambiente interativo \textit{Jupyter Notebook}. Dado o requisito de avaliação comparativa entre versões distintas do interpretador, empregou-se a ferramenta \texttt{pyenv} para o gerenciamento de versões. Foram instaladas e configuradas as versões \textit{Python 3.12.12} (estável) e \textit{Python 3.14.0t} (experimental \textit{free-threading}). Previamente à inicialização do servidor \textit{Jupyter}, a versão alvo foi selecionada explicitamente com os comandos \path{pyenv local {py_version}} e \path{pyenv shell {py_version}}.
+A orquestração e execução dos códigos foram realizadas utilizando o ambiente interativo \textit{Jupyter Notebook}. Dado o requisito de avaliação comparativa entre versões distintas do interpretador, empregou-se a ferramenta \texttt{pyenv} para o gerenciamento de versões. Foram instaladas e configuradas as versões \textit{Python 3.12.12} (estável) e \textit{Python 3.14.0t} (experimental \textit{free-threading}). Previamente à inicialização do servidor \textit{Jupyter}, a versão alvo foi selecionada explicitamente com os comandos \textit{pyenv local \{py\_version\}} e \textit{pyenv shell \{py\_version\}}.
 
-Também foi necessário neutralizar o paralelismo implícito de baixo nível presente nas bibliotecas de álgebra linear (BLAS/LAPACK) utilizadas pelo \textit{NumPy}. Para garantir que a operação vetorial \texttt{np.dot()}) fosse executada de maneira serial (\textit{single-threaded}) dentro de cada processo da aplicação, as seguintes variáveis de ambiente foram configuradas com valor 1:
+Também foi necessário neutralizar o paralelismo implícito de baixo nível presente nas bibliotecas de álgebra linear (BLAS/LAPACK) utilizadas pelo \textit{NumPy}. Para garantir que a operação vetorial \texttt{np.dot()} fosse executada de maneira serial (\textit{single-threaded}) dentro de cada processo da aplicação, as seguintes variáveis de ambiente foram configuradas com valor 1:
 
 \begin{flushleft}
 	OPENBLAS\_NUM\_THREADS=1 \hspace{0.05cm} OMP\_NUM\_THREADS=1 \hspace{0.05cm} MKL\_NUM\_THREADS=1  
 	VECLIB\_MAXIMUM\_THREADS=1 \hspace{0.05cm} NUMEXPR\_NUM\_THREADS=1 
 \end{flushleft}
 
-Além da seleção da versão adequada do interpretador e da parametrização para o Numpy, a utilização da versão \textit{Python 3.14.0t} requer a desativação explícita do \textit{GIL} via variável de ambiente. Assim, as instruções de linha de comando para a inicialização do servidor \textit{Jupyter}, referentes aos ambientes 3.12.12 e 3.14.0t, apresentam-se, respectivamente, da seguinte forma:
+Além da seleção da versão adequada do interpretador e da parametrização para o \textit{Numpy}, a utilização da versão \textit{Python 3.14.0t} requer a desativação explícita do GIL via variável de ambiente. Assim, as instruções de linha de comando para a inicialização do servidor \textit{Jupyter}, referentes aos ambientes 3.12.12 e 3.14.0t, apresentam-se, respectivamente, da seguinte forma:
 
 \vspace{0.3cm}
 
@@ -215,7 +213,7 @@ Para criar o projeto experimental, foram definidos 5 tamanhos de matriz de entra
 
 As 600 configurações resultantes (4 cenários $\times$ 5 tamanhos $\times$ 30 repetições) foram geradas via script e a sua  ordem foi aleatorizada. Esse embaralhamento é crucial para mitigar correlações temporais ou vieses entre as execuções. Adicionalmente, inseriu-se uma etapa de \textit{warm-up} no início da bateria de testes, composta por 6 execuções com matriz de tamanho 8000 e oito \textit{P-Cores} de \textit{thread} única. O objetivo desta etapa é permitir que a CPU atinja um estado estável de temperatura, sendo os resultados destas execuções descartados posteriormente. 
 
-Por fim, para garantir a reprodutibilidade e a igualdade da comparação, as três implementações fixaram a mesma semente (np.random.seed(42)). Isso assegura que todas as implementações processem exatamente as mesmas matrizes de entrada.
+Por fim, para garantir a reprodutibilidade e a igualdade da comparação, as três implementações fixaram a mesma semente (\path{np.random.seed(42)}). Isso assegura que todas as implementações processem exatamente as mesmas matrizes de entrada.
 
 O resultado final é um arquivo .csv contendo 606 configurações: as 6 primeiras de \textit{warm-up} e as 600 restantes pertencentes ao experimento. 
 
@@ -279,7 +277,7 @@ Tal comportamento é esperado, pois, no caso do \textit{Hyper-Threading}, ocorre
 
 Adicionalmente, observa-se que, para matrizes com dimensão superior a 4000, a abordagem de \textit{Multiprocessing} sofre severa degradação de desempenho ao utilizar \textit{E-Cores}. Com o aumento da carga computacional, o sistema operacional aloca processos nesses núcleos de menor capacidade, criando um gargalo. Este efeito é mitigado no \textit{Dask}, cujo escalonador dinâmico gerencia um \textit{pool} de recursos e prioriza a alocação de tarefas nos \textit{P-Cores}, evitando o uso ineficiente dos \textit{E-Cores} quando possível. Contudo, em cenários onde o \textit{pool} é restrito exclusivamente a \textit{E-Cores} (Cenário 8E), o aumento no tempo de execução do \textit{Dask} torna-se inevitável.
 
-\subsection{Tempo de execução por script}¨
+\subsection{Tempo de execução por script}
 
 A Figura~\ref{fig:line_tempo_por_scripts} destaca o comportamento do sistema para cargas de trabalho intensivas (matriz de tamanho 8000). Nota-se que o cenário 4P\_HT\_ON (\textit{Hyper-Threading} habilitado) posicionou-se entre os menores tempos médios de execução. Estatisticamente, para o script de \textit{Threading}, os cenários baseados exclusivamente em \textit{P-Cores} (4P\_HT\_ON e 8P\_HT\_OFF) apresentaram desempenho equivalente, por haver sobreposição de intervalos de confiança. O mesmo fenômeno de equivalência estatística ocorreu entre os cenários que envolvem \textit{E-Cores} (4P\_4E\_HT\_OFF e 8E).
 
@@ -294,7 +292,9 @@ Entretanto, há nítida diferença de desempenho entre os grupos com e sem \text
 
 %----------------------------------------------------------------------------------
 \section{Reprodutibilidade}
-Visando garantir a reprodutibilidade dos experimentos toda a pilha de software utilizada foi salva e exportada para arquivo de texto e inserida no repositório de arquivos deste trabalho no Github \cite{GitHub}.
+Para garantir a reprodutibilidade dos experimentos, todos os scripts desenvolvidos foram disponibilizados publicamente no GitHub \cite{GitHub}. Adicionalmente, as especificações completas dos ambientes de software, incluindo dependências do Python e pacotes do sistema operacional, foram exportadas e anexadas ao repositório.
+
+Os comandos a seguir detalham o processo de exportação das dependências:
 
 \begin{verbatim}
 	# 1. Exportar dependências do ambiente Python 3.12
@@ -309,7 +309,7 @@ Visando garantir a reprodutibilidade dos experimentos toda a pilha de software u
 	apt-mark showmanual > system_packages.txt
 \end{verbatim}
 
-Para instalar a pilha de software basta executar os comandos:
+Para a reconstituição do ambiente experimental, devem ser executadas as seguintes instruções:
 
 \begin{verbatim}
 	pip install -r requirements_py3.12.txt
@@ -321,7 +321,7 @@ Para instalar a pilha de software basta executar os comandos:
 %----------------------------------------------------------------------------------
 \section{Conclusões}
 
-Este estudo avaliou o desempenho de três estratégias de paralelismo em \textit{Python} — \textit{Multiprocessing}, \textit{Dask} e \textit{Threading} (modo \textit{free-threading}) — sob a uma arquitetura de processadores híbrida Intel Core de 14ª Geração. A partir dos dados experimentais, foi possível extrair inferências determinantes sobre como o \textit{hardware} e as implementações interagem com cargas intensivas em CPU, como a multiplicação de matrizes.
+Este estudo avaliou o desempenho de três estratégias de paralelismo em \textit{Python} — \textit{Multiprocessing}, \textit{Dask} e \textit{Threading} (modo \textit{free-threading}) — sob a uma arquitetura de processadores híbrida Intel Core de 14ª Geração. A partir dos dados experimentais foi possível extrair inferências determinantes sobre como o \textit{hardware} e as implementações interagem com cargas intensivas em CPU, como a multiplicação de matrizes.
 
 Dentre as implementações a versão \textit{Python 3.14.0t} demonstrou superioridade consistente. Ela apresentou os menores tempos de execução em todos os cenários e tamanhos de matriz, aliando alto desempenho à eficiência energética, evidenciada pela temperatura média de operação significativamente inferior ($\approx 45^\circ\text{C}$ contra $\approx 74^\circ\text{C}$ das demais). Isso sugere que a remoção do GIL e a utilização de memória compartilhada (\textit{Zero Copy}) eliminam gargalos críticos de serialização e \textit{overhead} de comunicação, tornando-se uma abordagem promissora para computação paralela em Python no futuro próximo.
 
@@ -329,9 +329,9 @@ Comparando \textit{Multiprocessing} e \textit{Dask}, observou-se um \textit{trad
 
 Assim, no que se refere à arquitetura de \textit{hardware} (\textit{P-Cores} vs. \textit{E-Cores}), a heterogeneidade impõe desafios para algoritmos de divisão simétrica de tarefas. Em cargas de trabalho estritamente \textit{CPU-bound}, os \textit{E-Cores} atuam como gargalos. Quando uma tarefa é dividida igualmente entre núcleos de performance e eficiência, o tempo total de execução é limitado pelo núcleo mais lento. Os experimentos mostraram que o uso de \textit{Hyper-Threading} nos \textit{P-Cores} oferece desempenho competitivo e estatisticamente equivalente ao uso de núcleos físicos dedicados em certas configurações, enquanto o uso exclusivo de \textit{E-Cores} resulta invariavelmente nos piores tempos devido à menor frequência de operação e arquitetura simplificada.
 
-Por fim, o tamanho de matriz apresentou impacto direto nos experimentos. Para entradas pequenas, o tempo de execução médio foi dominado pelo custo de criação e gerenciamento de processos/threads. À medida que a matriz cresce (acima de 4000), o problema torna-se puramente computacional. A partir deste momento a eficiência do código é fortemente dependente da frequência bruta da CPU, destacando as limitações dos \textit{E-Cores} e a vantagem da arquitetura de memória compartilhada do \textit{free-threading}.
+Por fim, o tamanho de matriz apresentou impacto direto nos experimentos. Para entradas pequenas, o tempo de execução médio foi dominado pelo custo de criação e gerenciamento de processos/\textit{threads}. À medida que a matriz cresce (acima de 4000), o problema torna-se puramente computacional. A partir deste momento a eficiência do código é fortemente dependente da frequência bruta da CPU, destacando as limitações dos \textit{E-Cores} e a vantagem da arquitetura de memória compartilhada do \textit{free-threading}.
 
-Em suma, para maximizar o desempenho em arquiteturas híbridas, deve-se priorizar implementações que evitem a cópia excessiva de dados e, idealmente, que possuam consciência da topologia do processador para evitar a subutilização de recursos causada pela diferenças de potência entre \textit{P-Cores} e \textit{E-Cores}.
+Em suma, para maximizar o desempenho em arquiteturas híbridas, deve-se priorizar implementações que evitem a cópia excessiva de dados e, idealmente, que possuam consciência da topologia do processador para evitar a subutilização de recursos causada pela diferença de potência entre \textit{P-Cores} e \textit{E-Cores}.
 
 
 %% The next two lines define the bibliography style to be used, and
